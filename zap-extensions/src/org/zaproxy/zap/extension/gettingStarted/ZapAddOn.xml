@@ -1,0 +1,20 @@
+<zapaddon>
+	<name>Getting Started with ZAP Guide</name>
+	<version>4</version>
+	<status>release</status>
+	<description>A short Getting Started with ZAP Guide</description>
+	<author>ZAP Dev Team</author>
+	<url></url>
+	<changes>Updated to point to GitHub</changes>
+	<extensions>
+	    <extension>org.zaproxy.zap.extension.gettingStarted.ExtensionGettingStarted</extension>
+	</extensions>
+	<ascanrules/>
+	<pscanrules/>
+	<filters/>
+	<files>
+		<file>lang/ZAPGettingStartedGuide-2.4.pdf</file>
+	</files>
+	<not-before-version>2.4.0</not-before-version>
+	<not-from-version/>
+</zapaddon>

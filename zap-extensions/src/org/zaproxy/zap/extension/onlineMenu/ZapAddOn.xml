@@ -1,0 +1,23 @@
+<zapaddon>
+	<name>Online menus</name>
+	<version>4</version>
+	<status>release</status>
+	<description>ZAP Online menu items</description>
+	<author>ZAP Dev Team</author>
+	<url>https://github.com/zaproxy/zap-core-help/wiki/HelpAddonsOnlineMenuOnlineMenu</url>
+	<changes>
+	<![CDATA[
+	   Issue 1999 - Fix Title Caps<br>
+       Issue 2009 - Add Online links to the FAQ and Newsletter pages<br>
+	]]>
+	</changes>
+	<extensions>
+		<extension>org.zaproxy.zap.extension.onlineMenu.ExtensionOnlineMenu</extension>
+	</extensions>
+	<ascanrules/>
+	<pscanrules/>
+	<filters/>
+	<files/>
+	<not-before-version>2.4.0</not-before-version>
+	<not-from-version></not-from-version>
+</zapaddon>

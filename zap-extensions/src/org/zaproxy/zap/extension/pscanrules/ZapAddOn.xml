@@ -1,0 +1,37 @@
+<zapaddon>
+	<name>Passive scanner rules</name>
+	<version>16</version>
+	<status>release</status>
+	<description>The release quality Passive Scanner rules</description>
+	<author>ZAP Dev Team</author>
+	<url/>
+	<changes>
+	<![CDATA[
+	Issue 823 - i18n (internationalise) release passive scan rules.<br>
+	Add CWE and WASC IDs to passive scanners which may have been lacking those details.<br>
+	]]>
+	</changes>
+	<extensions>
+		<extension>org.zaproxy.zap.extension.pscanrules.ExtensionPscanRules</extension>
+	</extensions>
+	<ascanrules/>
+	<pscanrules>
+		<pscanrule>org.zaproxy.zap.extension.pscanrules.ApplicationErrorScanner</pscanrule>         
+		<pscanrule>org.zaproxy.zap.extension.pscanrules.CacheControlScanner</pscanrule>
+		<pscanrule>org.zaproxy.zap.extension.pscanrules.ContentTypeMissingScanner</pscanrule>
+		<pscanrule>org.zaproxy.zap.extension.pscanrules.CookieHttpOnlyScanner</pscanrule>
+		<pscanrule>org.zaproxy.zap.extension.pscanrules.CookieSecureFlagScanner</pscanrule>
+		<pscanrule>org.zaproxy.zap.extension.pscanrules.CrossDomainScriptInclusionScanner</pscanrule>
+		<pscanrule>org.zaproxy.zap.extension.pscanrules.HeaderXssProtectionScanner</pscanrule>
+		<pscanrule>org.zaproxy.zap.extension.pscanrules.MixedContentScanner</pscanrule>
+		<pscanrule>org.zaproxy.zap.extension.pscanrules.PasswordAutocompleteScanner</pscanrule>
+		<pscanrule>org.zaproxy.zap.extension.pscanrules.TestInfoPrivateAddressDisclosure</pscanrule>
+		<pscanrule>org.zaproxy.zap.extension.pscanrules.TestInfoSessionIdURL</pscanrule>         
+		<pscanrule>org.zaproxy.zap.extension.pscanrules.XContentTypeOptionsScanner</pscanrule>
+		<pscanrule>org.zaproxy.zap.extension.pscanrules.XFrameOptionScanner</pscanrule>
+	</pscanrules>
+	<filters/>
+	<files/>
+	<not-before-version>2.4.0</not-before-version>
+	<not-from-version/>
+</zapaddon>
