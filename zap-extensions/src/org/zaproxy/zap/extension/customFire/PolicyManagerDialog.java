@@ -69,7 +69,10 @@ public class PolicyManagerDialog extends StandardFieldsDialog {
 	private static final Logger logger = Logger.getLogger(PolicyManagerDialog.class);
 
 	public PolicyManagerDialog(Frame owner) {
-		super(owner, "Scan Policy Manager", new Dimension(512, 400));
+		//super(owner, "Scan Policy Manager", new Dimension(512, 400));
+		super(owner, "customFire.custom.policymgr.title", new Dimension(512, 400));
+		
+		//customFire.custom.policymgr.title
 	}
 	/**
 	 * 
@@ -109,7 +112,7 @@ public class PolicyManagerDialog extends StandardFieldsDialog {
 
 	private JButton getAddButton() {
 		if (this.addButton == null) {
-			this.addButton = new JButton("Add");
+			this.addButton = new JButton(Constant.messages.getString("customFire.custom.policymgr.button.add"));
 			this.addButton.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
@@ -126,7 +129,7 @@ public class PolicyManagerDialog extends StandardFieldsDialog {
 
 	private JButton getModifyButton() {
 		if (this.modifyButton == null) {
-			this.modifyButton = new JButton("Modify");
+			this.modifyButton = new JButton(Constant.messages.getString("customFire.custom.policymgr.button.modify"));
 			this.modifyButton.setEnabled(false);
 			this.modifyButton.addActionListener(new ActionListener() {
 				@Override
@@ -147,7 +150,7 @@ public class PolicyManagerDialog extends StandardFieldsDialog {
 
 	private JButton getRemoveButton() {
 		if (this.removeButton == null) {
-			this.removeButton = new JButton("Remove");
+			this.removeButton = new JButton(Constant.messages.getString("customFire.custom.policymgr.button.remove"));
 			this.removeButton.setEnabled(false);
 			this.removeButton.addActionListener(new ActionListener() {
 				@Override
@@ -155,7 +158,7 @@ public class PolicyManagerDialog extends StandardFieldsDialog {
 					String name = (String) getParamsModel().getValueAt(getParamsTable().getSelectedRow(), 0);
 					if (name != null) {
 						if (View.getSingleton().showConfirmDialog(PolicyManagerDialog.this,
-								Constant.messages.getString("Delete"))
+								Constant.messages.getString("customFire.custom.policymgr.warn.delete"))
 								== JOptionPane.OK_OPTION) {
 							extension.getPolicyManager().deletePolicy(name);
 							policyNamesChanged();
@@ -169,7 +172,7 @@ public class PolicyManagerDialog extends StandardFieldsDialog {
 
 	private JButton getImportButton() {
 		if (this.importButton == null) {
-			this.importButton = new JButton("Import");
+			this.importButton = new JButton(Constant.messages.getString("customFire.custom.policymgr.button.import"));
 			this.importButton.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
@@ -203,7 +206,7 @@ public class PolicyManagerDialog extends StandardFieldsDialog {
 							policyNamesChanged();
 						} catch (ConfigurationException | IOException e1) {
 							logger.error(e1.getMessage(), e1);
-							View.getSingleton().showWarningDialog(Constant.messages.getString("Failed to load policy file, see log for detail"));
+							View.getSingleton().showWarningDialog(Constant.messages.getString("customFire.custom.policy.load.error"));
 						}
 					}
 				}
@@ -214,7 +217,7 @@ public class PolicyManagerDialog extends StandardFieldsDialog {
 
 	private JButton getExportButton() {
 		if (this.exportButton == null) {
-			this.exportButton = new JButton("Export");
+			this.exportButton = new JButton(Constant.messages.getString("customFire.custom.policymgr.button.export"));
 			this.exportButton.setEnabled(false);
 			this.exportButton.addActionListener(new ActionListener() {
 				@Override
@@ -254,7 +257,7 @@ public class PolicyManagerDialog extends StandardFieldsDialog {
 								}
 							} catch (ConfigurationException e1) {
 								logger.error(e1.getMessage(), e1);
-								View.getSingleton().showWarningDialog(Constant.messages.getString("Failed to load policy file, see log for detail"));
+								View.getSingleton().showWarningDialog(Constant.messages.getString("customFire.custom.policy.load.error"));
 							}
 						}
 					}
@@ -345,5 +348,5 @@ public class PolicyManagerDialog extends StandardFieldsDialog {
 	protected void policyNamesChanged() {
 		this.getParamsModel().setLines(extension.getPolicyManager().getAllPolicyNames());
 	}
-
+	
 }

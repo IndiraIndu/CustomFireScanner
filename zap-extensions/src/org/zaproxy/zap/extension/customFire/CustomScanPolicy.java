@@ -19,7 +19,6 @@ public class CustomScanPolicy extends ScanPolicy
 
 	private String name;
 	private PluginFactory pluginFactory = new PluginFactory();
-	
 	private AlertThreshold defaultThreshold;
 	private AttackStrength defaultStrength;
 	private ZapXmlConfiguration conf;
@@ -103,6 +102,7 @@ public class CustomScanPolicy extends ScanPolicy
 
 		}*/
 	}
+	
 	@Override
 	public void setDefaultStrength(AttackStrength defaultStrength) {
 		this.defaultStrength = defaultStrength;

@@ -57,8 +57,9 @@ public class CustomScriptsPopup extends JFrame {
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		contentPane.setLayout(new BorderLayout(0, 0));
 		setContentPane(contentPane);
-
-		JLabel lblHeaderlabel = new JLabel("Select Scripts: ");
+		
+		//JLabel lblHeaderlabel = new JLabel("Select Scripts: ");
+		JLabel lblHeaderlabel = new JLabel(Constant.messages.getString("customFire.custom.csp.label"));
 		Font font = new Font("Sans Serif", Font.BOLD,15);
 		lblHeaderlabel.setFont(font);
 		contentPane.add(lblHeaderlabel, BorderLayout.NORTH);
@@ -70,11 +71,12 @@ public class CustomScriptsPopup extends JFrame {
 		contentPane.add(footerPanel, BorderLayout.SOUTH);
 		footerPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 5));
 
-		JButton btnAddNewScript = new JButton("Add New Script");
+		//JButton btnAddNewScript = new JButton("Add New Script");
+		JButton btnAddNewScript = new JButton(Constant.messages.getString("customFire.custom.csp.button.addNewScript"));
 		btnAddNewScript.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				AddEditNewScriptUI dialog = new AddEditNewScriptUI(CustomScriptsPopup.this, "New Script",null);
+				AddEditNewScriptUI dialog = new AddEditNewScriptUI(CustomScriptsPopup.this, "New Script",null);//TODO
 				dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 				dialog.setVisible(true);
 
@@ -82,29 +84,32 @@ public class CustomScriptsPopup extends JFrame {
 		});
 		footerPanel.add(btnAddNewScript);
 
-		JButton btnSaveChanges = new JButton("Save");
+		JButton btnSaveChanges = new JButton(Constant.messages.getString("customFire.custom.csp.button.save"));
 		btnSaveChanges.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				boolean success = saveChanges();
 				if (success) {
-					JOptionPane.showMessageDialog(CustomScriptsPopup.this, "Changed succesfully Saved!", "Success",
-							JOptionPane.INFORMATION_MESSAGE);
+					JOptionPane.showMessageDialog(CustomScriptsPopup.this, //"Changed succesfully Saved!", "Success",
+							Constant.messages.getString("customFire.custom.csp.success.msg"),Constant.messages.getString("customFire.custom.csp.success.title")
+							,JOptionPane.INFORMATION_MESSAGE);
 				} else {
-					JOptionPane.showMessageDialog(CustomScriptsPopup.this, "Changes not saved", "Failure",
-							JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(CustomScriptsPopup.this, //"Changes not saved", "Failure",
+							Constant.messages.getString("customFire.custom.csp.failure.msg"),Constant.messages.getString("customFire.custom.csp.failure.title")
+							,JOptionPane.ERROR_MESSAGE);
 				}
 			}
 		});
 		footerPanel.add(btnSaveChanges);
 
-		JButton btnResetChanges = new JButton("Reset");
+		JButton btnResetChanges = new JButton(Constant.messages.getString("customFire.custom.csp.button.reset"));
 		btnResetChanges.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				int response = JOptionPane.showConfirmDialog(CustomScriptsPopup.this,
-						"Confirm Reset", "Confirm",
-						JOptionPane.YES_NO_OPTION);
+						//"Confirm Reset", "Confirm",
+						Constant.messages.getString("customFire.custom.csp.alert.msg"),Constant.messages.getString("customFire.custom.csp.alert.title")
+						,JOptionPane.YES_NO_OPTION);
 				if (response == JOptionPane.YES_OPTION) {
 					resetChanges();
 				}
@@ -112,13 +117,13 @@ public class CustomScriptsPopup extends JFrame {
 		});
 		footerPanel.add(btnResetChanges);
 
-		JButton btnExit = new JButton("Exit");
+		JButton btnExit = new JButton(Constant.messages.getString("customFire.custom.csp.button.exit"));
 		btnExit.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				int response = JOptionPane.showConfirmDialog(CustomScriptsPopup.this,
-						"Do You want to save changes before exit?", 
-						"Confirm"
+						//"Do You want to save changes before exit?", "Confirm"
+						Constant.messages.getString("customFire.custom.csp.exit.msg"),Constant.messages.getString("customFire.custom.csp.alert.title")
 						,JOptionPane.YES_NO_CANCEL_OPTION);
 				if (response == JOptionPane.YES_OPTION) {
 					saveChanges();
@@ -167,7 +172,8 @@ public class CustomScriptsPopup extends JFrame {
 		panelConstraints.gridy = 0;
 
 		existingscriptsPanel.setBorder(new TitledBorder(null,
-				"Default Scripts"
+//				"Default Scripts"
+				Constant.messages.getString("customFire.custom.csp.label.default")
 				,TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		scriptsPanel.add(existingscriptsPanel, panelConstraints);
 
@@ -260,12 +266,13 @@ public class CustomScriptsPopup extends JFrame {
 
 			});
 			gridBagConstraints.gridx++;
-			final JButton btnRemoveAttribute = new JButton("Remove Script");
+			final JButton btnRemoveAttribute = new JButton(Constant.messages.getString("customFire.custom.csp.button.remove"));
 			btnRemoveAttribute.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					int response = JOptionPane.showConfirmDialog(CustomScriptsPopup.this,
-							"Remove Script", "Confirm"
+							//"Remove Script", "Confirm"
+							Constant.messages.getString("customFire.custom.csp.remove.msg"),Constant.messages.getString("customFire.custom.csp.alert.title")
 							, JOptionPane.YES_NO_OPTION);
 					if (response == JOptionPane.YES_OPTION) {
 						addNewScriptPanel.remove(addedchkbx);
@@ -336,8 +343,11 @@ public class CustomScriptsPopup extends JFrame {
 			removeAddedScripts(existingscriptsPanel);
 			initScriptsExisting();
 		} catch(Exception e1) {
-			JOptionPane.showMessageDialog(CustomScriptsPopup.this, "Reset Failed","Failed",JOptionPane.ERROR_MESSAGE);
-			log.error("Resetting settings failed");
+			JOptionPane.showMessageDialog(CustomScriptsPopup.this, 
+					//"Reset Failed","Failed"
+					Constant.messages.getString("customFire.custom.csp.reset.fail.msg"),Constant.messages.getString("customFire.custom.csp.failure.title")
+					,JOptionPane.ERROR_MESSAGE);
+			log.error("Resetting scripts failed");
 		}
 	}
 
@@ -353,7 +363,8 @@ public class CustomScriptsPopup extends JFrame {
 		}
 		else{
 			JOptionPane.showMessageDialog(CustomScriptsPopup.this, 
-					"Script Exists already!", "Script Exists!"
+					//"Script Exists already!", "Script Exists!"
+					Constant.messages.getString("customFire.custom.csp.error.scriptExists"),Constant.messages.getString("customFire.custom.csp.error.scriptExists.title")
 					, JOptionPane.ERROR_MESSAGE);
 		}
 	}
@@ -367,7 +378,8 @@ public class CustomScriptsPopup extends JFrame {
 		}
 		else{
 			JOptionPane.showMessageDialog(CustomScriptsPopup.this, 
-					"Script Exists already!", "Script Exists!"
+					//"Script Exists already!", "Script Exists!"
+					Constant.messages.getString("customFire.custom.csp.error.scriptExists"),Constant.messages.getString("customFire.custom.csp.error.scriptExists.title")
 					, JOptionPane.ERROR_MESSAGE);
 		}
 	}

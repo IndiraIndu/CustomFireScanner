@@ -91,7 +91,7 @@ public class CustomScan extends org.parosproxy.paros.core.scanner.Scanner implem
 	private static final Logger log = Logger.getLogger(CustomScan.class);
 
 	public CustomScan(String displayName, ScannerParam scannerParam, 
-			ConnectionParam param, org.zaproxy.zap.extension.ascan.ScanPolicy scanPolicy) {
+			ConnectionParam param,/* org.zaproxy.zap.extension.ascan.*/CustomScanPolicy scanPolicy) {
 		super(scannerParam, param, scanPolicy);
 		this.displayName = displayName;
 		

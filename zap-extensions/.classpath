@@ -36,7 +36,7 @@
 	<classpathentry kind="lib" path="lib/JBroFuzz.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="lib/commons-codec-1.9.jar"/>
-	<classpathentry kind="lib" path="lib/zap-2.4.3.jar"/>
+	<classpathentry kind="lib" path="lib/zap-2.4.3.jar" sourcepath="/zaproxy"/>
 	<classpathentry kind="lib" path="lib/selenium-server-standalone-2.52.0.jar"/>
 	<classpathentry kind="lib" path="/zaproxy/lib/jfreechart-1.0.13.jar"/>
 	<classpathentry kind="lib" path="/zaproxy/lib/JBroFuzz.jar"/>

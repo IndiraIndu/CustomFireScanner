@@ -382,6 +382,7 @@ public class ExtensionCustomFire extends ExtensionAdaptor implements SessionChan
 	}
 
 	public void showPolicyManagerDialog() {
+		
 		if (policyManagerDialog == null) {
 			policyManagerDialog = new PolicyManagerDialog(View.getSingleton().getMainFrame());
 			policyManagerDialog.init(this);
@@ -392,13 +393,6 @@ public class ExtensionCustomFire extends ExtensionAdaptor implements SessionChan
 	}
 
 	public PolicyManager getPolicyManager() {
-		if (policyManagerDialog == null) {
-			policyManagerDialog = new PolicyManagerDialog(View.getSingleton().getMainFrame());
-			policyManagerDialog.init(this);
-		}
-		// The policy names _may_ have changed, eg via the api
-		policyManagerDialog.policyNamesChanged();
-		policyManagerDialog.setVisible(true);
 		return policyManager;
 	}
 

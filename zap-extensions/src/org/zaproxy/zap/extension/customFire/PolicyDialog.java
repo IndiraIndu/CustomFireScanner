@@ -41,7 +41,7 @@ import org.parosproxy.paros.view.AbstractParamPanel;
 public class PolicyDialog extends AbstractParamDialog {
 
     private static final long serialVersionUID = 1L;
-    private static final String POLICY = Constant.messages.getString("Scan Policy"); 
+    private static final String POLICY = Constant.messages.getString("customFire.custom.policy.dialog.title"); 
     private static final String[] ROOT = {};
     private ExtensionCustomFire extension;
     private PolicyAllCategoryPanel policyAllCategoryPanel = null;
@@ -58,7 +58,7 @@ public class PolicyDialog extends AbstractParamDialog {
      * @throws HeadlessException
      */
     public PolicyDialog(ExtensionCustomFire extension, PolicyManagerDialog pmd, CustomScanPolicy policy) throws HeadlessException {
-        super(pmd, true, POLICY, Constant.messages.getString("ascan.policy.title"));
+        super(pmd, true, POLICY, Constant.messages.getString("customFire.custom.policy.title"));
         this.extension = extension;
         this.pmd = pmd;
         this.policy = policy;
@@ -79,7 +79,7 @@ public class PolicyDialog extends AbstractParamDialog {
             		new PolicyCategoryPanel(i, policy.getPluginFactory(), policy.getDefaultThreshold()), true);
         }
         
-        this.setFooter(Constant.messages.getString("ascan.policy.dialog.footer"));
+        this.setFooter(Constant.messages.getString("customFire.custom.policy.dialog.footer"));
     }
 
     /**
@@ -99,7 +99,7 @@ public class PolicyDialog extends AbstractParamDialog {
     public PolicyAllCategoryPanel getPolicyAllCategoryPanel() {
         if (policyAllCategoryPanel == null) {
             policyAllCategoryPanel = new PolicyAllCategoryPanel(this.pmd, extension, policy);
-            policyAllCategoryPanel.setName(Constant.messages.getString("Scan Policy"));
+            policyAllCategoryPanel.setName(Constant.messages.getString("customFire.custom.policy.title"));
         }
         
         return policyAllCategoryPanel;

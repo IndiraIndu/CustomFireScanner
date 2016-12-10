@@ -58,10 +58,10 @@ public class CategoryTableModel extends DefaultTableModel {
 	
 	// ZAP: i18n
 	private static final String[] columnNames = {
-		Constant.messages.getString("ascan.policy.table.testname"), 
-		Constant.messages.getString("ascan.policy.table.threshold"), 
-		Constant.messages.getString("ascan.policy.table.strength"),
-		Constant.messages.getString("ascan.policy.table.quality")};
+		Constant.messages.getString("customFire.custom.policy.table.testname"), 
+		Constant.messages.getString("customFire.custom.policy.table.threshold"), 
+		Constant.messages.getString("customFire.custom.policy.table.strength"),
+		Constant.messages.getString("customFire.custom.policy.table.quality")};
 
 	private static final int QUALITY_COLUMN_IDX = 3;
 	
@@ -142,7 +142,7 @@ public class CategoryTableModel extends DefaultTableModel {
                                 List<Plugin> allDeps = new ArrayList<>(dependencies.length);
                                 if (!pluginFactory.addAllDependencies(test, allDeps)) {
                                     View.getSingleton().showWarningDialog(
-                                            Constant.messages.getString("ascan.policy.unfulfilled.dependencies"));
+                                            Constant.messages.getString("customFire.custom.policy.unfulfilled.dependencies"));
                                     return;
                                 }
 
@@ -208,7 +208,7 @@ public class CategoryTableModel extends DefaultTableModel {
 
     private String strToI18n (String str) {
     	// I18n's threshold and strength enums
-    	return Constant.messages.getString("ascan.policy.level." + str.toLowerCase());
+    	return Constant.messages.getString("customFire.custom.policy.level." + str.toLowerCase());
     }
 
     private String i18nToStr (String str) {

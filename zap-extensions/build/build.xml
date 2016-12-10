@@ -17,6 +17,7 @@
 	<property name="wiki.zapcorehelp.dir" location="../../zap-core-help-wiki" />
 	<!-- This assumes you also have the zaproxy project -->
 	<property name="zap.plugin.dir" location="../../zaproxy/src/plugin" />
+	<property name="zap.plugin.customfire.dir" location="C:/Users/indira_g/OWASP ZAP_D/plugin" />
 	<!-- This assumes you also have the zaproxy_2.4 project (used for the weekly release -->
 	<property name="zap.download.url" value="https://github.com/zaproxy/zap-extensions/releases/download/2.4" />
 
@@ -434,7 +435,15 @@
 	
 	<target name="deploy-customFire" description="deploy Custom Fire">
 			<build-deploy-addon name="customFire" />
+		<copy todir="${zap.plugin.customfire.dir}">
+						<fileset dir="${dist}">
+						<include name="*.zap"/>
+						</fileset>
+					</copy>
+		
 		</target>
+	
+	
 
 	<target name="deploy-ascanrules-without-help-indexes" description="deploy the active scan rules">
 		<build-deploy-addon-without-help-indexes name="ascanrules" />

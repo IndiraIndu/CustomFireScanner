@@ -146,10 +146,10 @@ ScannerListener {
 
 	private JButton getProgressButton() {
 		if (progressButton == null) {
-			progressButton = new JButton("Test");
+			progressButton = new JButton("");
 			progressButton.setEnabled(false); //false->true
 			
-			progressButton.setIcon(DisplayUtils.getScaledIcon(new ImageIcon(CustomScanPanel.class.getResource("/org/zaproxy/zap/extension/customFire/resources/cake.png"))));
+			progressButton.setIcon(DisplayUtils.getScaledIcon(new ImageIcon(CustomScanPanel.class.getResource("/org/zaproxy/zap/extension/customFire/resources/progress.png"))));
 			progressButton.addActionListener(new ActionListener () {
 				@Override
 				public void actionPerformed(ActionEvent e) {

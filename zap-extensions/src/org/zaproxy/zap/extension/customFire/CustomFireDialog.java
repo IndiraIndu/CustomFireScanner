@@ -75,6 +75,7 @@ import org.zaproxy.zap.extension.customFire.PolicyAllCategoryPanel;
 import org.zaproxy.zap.extension.customFire.PolicyAllCategoryPanel.ScanPolicyChangedEventListener;
 import org.zaproxy.zap.extension.customFire.PolicyCategoryPanel;
 import org.zaproxy.zap.extension.customFire.PolicyManager;
+import org.zaproxy.zap.control.ZapAddOnXmlFile;
 import org.zaproxy.zap.extension.customFire.CustomScanPolicy;
 import org.zaproxy.zap.extension.users.ExtensionUserManagement;
 import org.zaproxy.zap.model.Context;
@@ -342,7 +343,7 @@ public class CustomFireDialog extends StandardFieldsDialog {
 	}
 
 	@Override
-	public void targetSelected(String field, Target node) {//iuc_s
+	public void targetSelected(String field, Target node) {
 		List<String> ctxNames = new ArrayList<>();
 		if (node != null) {
 			// The user has selected a new node
@@ -364,7 +365,7 @@ public class CustomFireDialog extends StandardFieldsDialog {
 		}
 
 		this.setComboFields(FIELD_CONTEXT, ctxNames, "");
-		this.getField(FIELD_CONTEXT).setEnabled(ctxNames.size() > 0);//iuc_e
+		this.getField(FIELD_CONTEXT).setEnabled(ctxNames.size() > 0);
 	}
 	/**
 	 * 
@@ -1014,10 +1015,11 @@ public class CustomFireDialog extends StandardFieldsDialog {
 	}
 
 
-	// Testing purpose
-	/*public static void main(String[] args) {
+	/*// Testing purpose
+	public static void main(String[] args) {
 		ExtensionCustomFire ext = new ExtensionCustomFire();
 		CustomFireDialog customFireDialog = new CustomFireDialog(ext, STD_TAB_LABELS,null, null, null);
 		customFireDialog.init(null);
-	}*/
+			}
+	*/
 }

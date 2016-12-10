@@ -2,6 +2,9 @@ package org.zaproxy.zap.extension.customFire;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+
+import org.parosproxy.paros.Constant;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -40,7 +43,7 @@ public class AddEditNewScriptUI extends JDialog {
 
 		c.gridy++;
 		c.gridx = 0;
-		JLabel lblValue = new JLabel("Script: ");
+		JLabel lblValue = new JLabel(Constant.messages.getString("customFire.custom.addEdit.label"));
 		contentPanel.add(lblValue,c);
 
 		c.gridx++;
@@ -51,23 +54,26 @@ public class AddEditNewScriptUI extends JDialog {
 		footerPanel.setLayout(new FlowLayout());
 		getContentPane().add(footerPanel,BorderLayout.SOUTH);
 
-		final JButton okButton = new JButton("Ok");
+		final JButton okButton = new JButton(Constant.messages.getString("customFire.custom.addEdit.button.ok"));
 		okButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 
 				if (txtScriptVals.getText().equals("")) {
 					JOptionPane.showMessageDialog(AddEditNewScriptUI.this, 
-							"Please enter a Script", "No Script!"
+							Constant.messages.getString("customFire.custom.addEdit.alert.enterScript"),
+							Constant.messages.getString("customFire.custom.addEdit.alert.noScript")
 							, JOptionPane.ERROR_MESSAGE);
 					return;
 				}
 
 				if(title=="New Script"){
+					//if(title==Constant.messages.getString("customFire.custom.addEdit.title.new")){
 					customScriptsPopup.onAddDesiredScript(txtScriptVals.getText());
 				}
 
 				if(title=="Edit Script"){
+					//if(title==Constant.messages.getString("customFire.custom.addEdit.title.edit")){
 					customScriptsPopup.onEditDesiredScript(txtScriptVals.getText(),cb);
 					//cb.setText(txtScriptVals.getText());
 				}
@@ -81,7 +87,7 @@ public class AddEditNewScriptUI extends JDialog {
 		footerPanel.add(okButton);
 		getRootPane().setDefaultButton(okButton);
 
-		JButton cancelButton = new JButton("Cancel");
+		JButton cancelButton = new JButton(Constant.messages.getString("customFire.custom.addEdit.button.cancel"));
 		cancelButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
