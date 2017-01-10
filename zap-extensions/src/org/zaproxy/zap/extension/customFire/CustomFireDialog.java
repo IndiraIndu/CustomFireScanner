@@ -31,6 +31,13 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -38,6 +45,8 @@ import java.util.List;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JComponent;
+import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -46,6 +55,7 @@ import javax.swing.JSplitPane;
 import javax.swing.ListCellRenderer;
 import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
+import javax.swing.filechooser.FileFilter;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultHighlighter;
 import javax.swing.text.Highlighter;
@@ -70,6 +80,7 @@ import org.parosproxy.paros.model.SiteNode;
 import org.parosproxy.paros.network.HttpMalformedHeaderException;
 import org.parosproxy.paros.network.HttpMessage;
 import org.parosproxy.paros.view.AbstractParamContainerPanel;
+import org.parosproxy.paros.view.View;
 import org.zaproxy.zap.extension.customFire.OptionsVariantPanel;
 import org.zaproxy.zap.extension.customFire.PolicyAllCategoryPanel;
 import org.zaproxy.zap.extension.customFire.PolicyAllCategoryPanel.ScanPolicyChangedEventListener;
@@ -77,6 +88,8 @@ import org.zaproxy.zap.extension.customFire.PolicyCategoryPanel;
 import org.zaproxy.zap.extension.customFire.PolicyManager;
 import org.zaproxy.zap.control.ZapAddOnXmlFile;
 import org.zaproxy.zap.extension.customFire.CustomScanPolicy;
+import org.zaproxy.zap.extension.customFire.JCheckBoxScriptsTree.CheckChangeEvent;
+import org.zaproxy.zap.extension.customFire.JCheckBoxScriptsTree.CheckChangeEventListener;
 import org.zaproxy.zap.extension.users.ExtensionUserManagement;
 import org.zaproxy.zap.model.Context;
 import org.zaproxy.zap.model.StructuralNode;
@@ -269,6 +282,7 @@ public class CustomFireDialog extends StandardFieldsDialog {
 		policyPanel.resetAndSetPolicy(scanPolicy.getName());
 
 		this.setCustomTabPanel(4, policyPanel);
+
 
 		// add custom panels
 		int cIndex = 6;
@@ -603,22 +617,23 @@ public class CustomFireDialog extends StandardFieldsDialog {
 
 		return techPanel;
 	}
+	
 	/**
 	 * 
 	 * @return JPanel `
 	 */
 	private JPanel getScriptPanel() {
-		if (sPanel == null) {
-			sPanel = new JPanel(new GridBagLayout());
+		//if (sPanel == null) {
+		sPanel = new JPanel(new GridBagLayout());
 
-			JScrollPane scrollPane = new JScrollPane();
-			scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-			scrollPane.setViewportView(getSTree());
-			scrollPane.setBorder(javax.swing.BorderFactory
-					.createEtchedBorder(javax.swing.border.EtchedBorder.RAISED));
+		JScrollPane scrollPane = new JScrollPane();
+		scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+		scrollPane.setViewportView(getSTree());
+		scrollPane.setBorder(javax.swing.BorderFactory
+				.createEtchedBorder(javax.swing.border.EtchedBorder.RAISED));
 
-			sPanel.add(scrollPane, LayoutHelper.getGBC(0, 0, 1, 1, 1.0D, 1.0D));
-		}
+		sPanel.add(scrollPane, LayoutHelper.getGBC(0, 0, 1, 1, 1.0D, 1.0D));
+		//}
 
 		return sPanel;
 	}
@@ -630,16 +645,60 @@ public class CustomFireDialog extends StandardFieldsDialog {
 		return techTree;
 	}	
 
+		
+
+
 	/**
 	 * 
 	 * @return ScriptTreePanel `
 	 */
-	private ScriptTreePanel getSTree() {  
-		if (sTree == null) {
-			sTree = new ScriptTreePanel(Constant.messages.getString("customFire.custom.tab.script.node")); 
-		}
+	public ScriptTreePanel getSTree() {  //STP Deser
+		//if (sTree == null) {
+
+			ScriptTreePanel stp = new ScriptTreePanel(Constant.messages.getString("customFire.custom.tab.script.node"));
+			JFileChooser chooser = new JFileChooser(Constant.getZapHome());
+			chooser.setFileFilter(new FileFilter() {
+				@Override
+				public boolean accept(File file) {
+					if (file.isDirectory()) {
+						return true;
+					} else if (file.isFile() && file.getName().endsWith(".ser")) {
+						return true;
+					}
+					return false;
+				}
+
+				@Override
+				public String getDescription() {
+					return Constant.messages.getString("customFire.custom.file.format.csp.ser");
+				}
+			});
+			File file = null;
+			int rc = chooser.showOpenDialog(View.getSingleton().getMainFrame());
+			if (rc == JFileChooser.APPROVE_OPTION) {
+				file = chooser.getSelectedFile();
+				if (file == null || !file.getName().equalsIgnoreCase("Scripts.ser") ) {
+					View.getSingleton().showWarningDialog(Constant.messages.getString("customFire.custom.scripts.ser.mismatch.error"));
+					return stp;
+				}
+				try {
+					FileInputStream fis = new FileInputStream(file.getPath());
+					ObjectInputStream ois = new ObjectInputStream(fis);
+					stp = (ScriptTreePanel)ois.readObject();
+					stp.addScriptTreeListener(stp);
+					ois.close();
+					fis.close();
+
+				} catch ( IOException | ClassNotFoundException e1) {
+					View.getSingleton().showWarningDialog(Constant.messages.getString("customFire.custom.ser.load.error"));
+				}
+			}
+			/*return stp;*/
+			sTree = stp;
+
+		//}
 		return sTree;
-	}	
+	}
 
 	private void setFieldStates() { 
 		int userDefStart = getRequestField().getSelectionStart();
@@ -767,6 +826,7 @@ public class CustomFireDialog extends StandardFieldsDialog {
 	@Override
 	public JButton[] getExtraButtons() {
 		if (extraButtons == null) {
+			
 			JButton resetButton = new JButton(Constant.messages.getString("customFire.custom.button.reset"));
 			resetButton.addActionListener(new java.awt.event.ActionListener() {
 				@Override
@@ -775,9 +835,19 @@ public class CustomFireDialog extends StandardFieldsDialog {
 				}
 			});
 
-			extraButtons = new JButton[]{resetButton};
-		}
+			JButton scriptsButton = new JButton(Constant.messages.getString("customFire.custom.button.saveScripts"));
+			scriptsButton.addActionListener(new java.awt.event.ActionListener() {
+				@Override
+				public void actionPerformed(java.awt.event.ActionEvent e) {
+					if(sTree==null){
+						sTree = new ScriptTreePanel(Constant.messages.getString("customFire.custom.tab.script.node"));
+					}
+					sTree.saveScriptsState();
+				}
+			});
 
+			extraButtons = new JButton[]{resetButton,scriptsButton};
+		}
 		return extraButtons;
 	}
 
@@ -1014,12 +1084,4 @@ public class CustomFireDialog extends StandardFieldsDialog {
 		reset(true);
 	}
 
-
-	/*// Testing purpose
-	public static void main(String[] args) {
-		ExtensionCustomFire ext = new ExtensionCustomFire();
-		CustomFireDialog customFireDialog = new CustomFireDialog(ext, STD_TAB_LABELS,null, null, null);
-		customFireDialog.init(null);
-			}
-	*/
 }

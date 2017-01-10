@@ -21,6 +21,7 @@ package org.zaproxy.zap.extension.customFire;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -36,7 +37,12 @@ import org.zaproxy.zap.utils.ZapXmlConfiguration;
  *
  * Nov 29, 2016  org.zaproxy.zap.extension.customFire
  */
-public class PolicyManager {
+public class PolicyManager implements Serializable {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
 	public static final String POLICY_EXTENSION = ".policy";
 
@@ -165,7 +171,7 @@ public class PolicyManager {
 		CustomScanPolicy policy = new CustomScanPolicy(new ZapXmlConfiguration(file));
 		String baseName = file.getName();
 		if (baseName.endsWith(POLICY_EXTENSION)) {
-			// Stip off the extension for the 'friendly name' and if we need to prevent overwriting an existing one
+			// Strip off the extension for the 'friendly name' and if we need to prevent overwriting an existing one
 			baseName = baseName.substring(0, baseName.indexOf(POLICY_EXTENSION));
 		}
 		String finalName = baseName;

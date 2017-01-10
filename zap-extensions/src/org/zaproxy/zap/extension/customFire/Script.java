@@ -19,6 +19,7 @@
  */
 package org.zaproxy.zap.extension.customFire;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,8 +37,12 @@ import org.zaproxy.zap.control.ExtensionFactory;
  *
  * Nov 29, 2016  org.zaproxy.zap.extension.customFire
  */
-public class Script implements Comparable<Script> {
+public class Script implements Comparable<Script>, Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private static List<AbstractPlugin> loadedPlugins = null;
 	private List<Plugin> listAllPlugin = new ArrayList<Plugin>();
 

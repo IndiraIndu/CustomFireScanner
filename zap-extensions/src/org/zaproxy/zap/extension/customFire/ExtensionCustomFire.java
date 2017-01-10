@@ -21,6 +21,7 @@ package org.zaproxy.zap.extension.customFire;
 
 import java.awt.CardLayout;
 import java.awt.Dimension;
+import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.InvalidParameterException;
@@ -33,7 +34,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JTextPane;
 
 import org.apache.commons.configuration.ConfigurationException;
-import org.apache.log4j.Logger;
+//import org.apache.log4j.Logger;
 import org.parosproxy.paros.Constant;
 import org.parosproxy.paros.control.Control;
 import org.parosproxy.paros.control.Control.Mode;
@@ -66,7 +67,12 @@ import org.zaproxy.zap.view.ZapMenuItem;
  * 
  * Adds a set of customize injections for security testing web applications.
  */
-public class ExtensionCustomFire extends ExtensionAdaptor implements SessionChangedListener,ScanController<CustomScan> {
+public class ExtensionCustomFire extends ExtensionAdaptor implements SessionChangedListener,ScanController<CustomScan>, Serializable {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
 	public static final String NAME = "ExtensionCustomFire";
 
@@ -90,8 +96,8 @@ public class ExtensionCustomFire extends ExtensionAdaptor implements SessionChan
 	private final List<AbstractParamPanel> policyPanels = new ArrayList<>(); 
 	private OptionsVariantPanel optionsVariantPanel = null;
 
-	private static final Logger logger = Logger.getLogger(ExtensionCustomFire.class);
-	private Logger log = Logger.getLogger(this.getClass());
+	//private static final Logger logger = Logger.getLogger(ExtensionCustomFire.class);
+	//private Logger log = Logger.getLogger(this.getClass());
 
 	private CustomScanController cscanController = null;
 	private CustomScanPanel customScanPanel = null;
@@ -214,7 +220,7 @@ public class ExtensionCustomFire extends ExtensionAdaptor implements SessionChan
 				getModel().getOptionsParam().getConfig().save();
 
 			} catch (ConfigurationException ce) {
-				logger.error(ce.getMessage(), ce);
+				//logger.error(ce.getMessage(), ce);
 				getView().showWarningDialog(Constant.messages.getString("scanner.save.warning"));
 			}
 		}

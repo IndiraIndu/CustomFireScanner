@@ -17,6 +17,7 @@
  */
 package org.zaproxy.zap.extension.customFire;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -25,7 +26,7 @@ import java.util.Map;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import org.apache.log4j.Logger;
+//import org.apache.log4j.Logger;
 import org.parosproxy.paros.core.scanner.Alert;
 import org.parosproxy.paros.core.scanner.ScannerParam;
 import org.parosproxy.paros.model.Model;
@@ -44,10 +45,15 @@ import org.zaproxy.zap.users.User;
  * Nov 29, 2016  org.zaproxy.zap.extension.customFire
  */
 
-public class CustomScanController implements ScanController<CustomScan> {
+public class CustomScanController implements ScanController<CustomScan>, Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	
 	private ExtensionCustomFire extension;
-	private static final Logger logger = Logger.getLogger(CustomScanController.class);
+	//private static final Logger logger = Logger.getLogger(CustomScanController.class);
 
 	private ExtensionAlert extAlert = null;
 
@@ -135,11 +141,11 @@ public class CustomScanController implements ScanController<CustomScan> {
 			if (contextSpecificObjects != null) {
 				for (Object obj : contextSpecificObjects) {
 					if (obj instanceof ScannerParam) {
-						logger.debug("Setting custom scanner params");
+						//logger.debug("Setting custom scanner params");
 						customScan.setScannerParam((ScannerParam)obj);
 					} else if (obj instanceof CustomScanPolicy) {
 						policy = (CustomScanPolicy)obj;
-						logger.debug("Setting custom policy " + policy.getName());
+						//logger.debug("Setting custom policy " + policy.getName());
 						customScan.setScanPolicy(policy);
 					} else if (obj instanceof TechSet) {
 						customScan.setTechSet((TechSet) obj);
@@ -147,14 +153,14 @@ public class CustomScanController implements ScanController<CustomScan> {
 					} else if (obj instanceof ScriptCollection) {
 						customScan.addScriptCollection((ScriptCollection)obj);
 					} else {
-						logger.error("Unexpected contextSpecificObject: " + obj.getClass().getCanonicalName());
+						//logger.error("Unexpected contextSpecificObject: " + obj.getClass().getCanonicalName());
 					}
 				}
 			}
 			if (policy == null) {
 				// use the default
 				policy = extension.getPolicyManager().getDefaultScanPolicy();
-				logger.debug("Setting default policy " + policy.getName());
+				//logger.debug("Setting default policy " + policy.getName());
 				customScan.setScanPolicy(policy);
 			}
 

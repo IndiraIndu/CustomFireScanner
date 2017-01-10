@@ -44,6 +44,7 @@
 
 package org.zaproxy.zap.extension.customFire;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -62,7 +63,12 @@ import org.parosproxy.paros.core.scanner.ScannerParamFilter;
  *
  * Nov 29, 2016  org.zaproxy.zap.extension.customFire
  */
-public class ScannerParam extends AbstractParam {
+public class ScannerParam extends AbstractParam implements Serializable {
+	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
     // Base path for the Scanner Param tree
     private static final String CUSTOM_SCAN_BASE_KEY = "scanner";

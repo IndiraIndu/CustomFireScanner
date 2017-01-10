@@ -37,7 +37,7 @@ public interface CustomFirePanel {
 	String getLabel();
 
 	/**
-	 * The panel to add to the custom active scan dialog
+	 * The panel to add to the custom fire scan dialog
 	 * @return
 	 */
 	AbstractParamPanel getPanel(boolean init);

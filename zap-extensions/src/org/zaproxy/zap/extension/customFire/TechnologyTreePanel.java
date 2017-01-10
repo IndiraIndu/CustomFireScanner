@@ -103,7 +103,7 @@ public class TechnologyTreePanel extends JPanel {
         }
 
         techTree.setModel(new DefaultTreeModel(root));
-        //techTree.expandAll();
+        techTree.expandAll();
         techTree.setCheckBoxEnabled(new TreePath(root), false);
         reset();
 

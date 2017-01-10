@@ -19,6 +19,7 @@
  */
 package org.zaproxy.zap.extension.customFire;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.TreeSet;
 
@@ -28,8 +29,13 @@ import java.util.TreeSet;
  *
  * Nov 29, 2016  org.zaproxy.zap.extension.customFire
  */
-public class ScriptSet {
+public class ScriptSet implements Serializable{
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public static final ScriptSet AllScript = new ScriptSet();
 	
 	private TreeSet<Script> includeScript = new TreeSet<>();

@@ -1,24 +1,58 @@
 package org.zaproxy.zap.extension.customFire;
 
-import org.apache.log4j.Logger;
-import org.parosproxy.paros.Constant;
-
-import javax.swing.*;
-import javax.swing.border.EmptyBorder;
-import javax.swing.border.TitledBorder;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.util.ArrayList;
-import java.util.List;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.LineNumberReader;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Vector;
+import java.util.jar.JarFile;
+
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JDialog;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.JScrollPane;
+import javax.swing.JTree;
+import javax.swing.SwingUtilities;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.TitledBorder;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.filechooser.FileFilter;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreePath;
+
+import org.apache.commons.io.FilenameUtils;
+import org.parosproxy.paros.Constant;
+import org.parosproxy.paros.view.View;
 
 /**
  * 
@@ -32,20 +66,30 @@ public class CustomScriptsPopup extends JFrame {
 	private JScrollPane scriptsScrollPane;
 	private ScriptTreePanel scriptTree;
 
+
 	JPanel existingscriptsPanel = new JPanel();
 	final JPanel addNewScriptPanel = new JPanel(); 
 
 	String vulName;
+	ScriptTreePanel stp;//un
 
-	protected Logger log = Logger.getLogger(CustomScriptsPopup.class.getName());
+	//protected Logger log = Logger.getLogger(CustomScriptsPopup.class.getName());//ser
 	private String addedScript;
 	private List<CustomScriptComponent> components = null;
+
+	CheckBoxNodeRenderer renderer = new CheckBoxNodeRenderer();
+	JTree tree = new JTree();
+	//static JPopupMenu popup = new JPopupMenu();
+	private JButton btnAddNewScript;
+	private JButton btnSaveChanges;
+	private JButton btnResetChanges;
+	private JButton btnExit;
+
 
 	/**
 	 * Create the frame.
 	 */
-	public CustomScriptsPopup(final ScriptTreePanel stp,final String vulName) {
-
+	public CustomScriptsPopup(final String vulName) {
 		this.vulName = vulName;
 
 		setTitle(vulName);
@@ -57,8 +101,7 @@ public class CustomScriptsPopup extends JFrame {
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		contentPane.setLayout(new BorderLayout(0, 0));
 		setContentPane(contentPane);
-		
-		//JLabel lblHeaderlabel = new JLabel("Select Scripts: ");
+
 		JLabel lblHeaderlabel = new JLabel(Constant.messages.getString("customFire.custom.csp.label"));
 		Font font = new Font("Sans Serif", Font.BOLD,15);
 		lblHeaderlabel.setFont(font);
@@ -71,12 +114,11 @@ public class CustomScriptsPopup extends JFrame {
 		contentPane.add(footerPanel, BorderLayout.SOUTH);
 		footerPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 5));
 
-		//JButton btnAddNewScript = new JButton("Add New Script");
-		JButton btnAddNewScript = new JButton(Constant.messages.getString("customFire.custom.csp.button.addNewScript"));
+		btnAddNewScript = new JButton(Constant.messages.getString("customFire.custom.csp.button.addNewScript"));
 		btnAddNewScript.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				AddEditNewScriptUI dialog = new AddEditNewScriptUI(CustomScriptsPopup.this, "New Script",null);//TODO
+				AddEditNewScriptUI dialog = new AddEditNewScriptUI(CustomScriptsPopup.this, "New Script",null);
 				dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 				dialog.setVisible(true);
 
@@ -84,30 +126,31 @@ public class CustomScriptsPopup extends JFrame {
 		});
 		footerPanel.add(btnAddNewScript);
 
-		JButton btnSaveChanges = new JButton(Constant.messages.getString("customFire.custom.csp.button.save"));
+		btnSaveChanges = new JButton(Constant.messages.getString("customFire.custom.csp.button.save"));
 		btnSaveChanges.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				boolean success = saveChanges();
 				if (success) {
-					JOptionPane.showMessageDialog(CustomScriptsPopup.this, //"Changed succesfully Saved!", "Success",
+					JOptionPane.showMessageDialog(CustomScriptsPopup.this, 
 							Constant.messages.getString("customFire.custom.csp.success.msg"),Constant.messages.getString("customFire.custom.csp.success.title")
 							,JOptionPane.INFORMATION_MESSAGE);
+					CustomScriptsPopup.this.setVisible(false);
 				} else {
-					JOptionPane.showMessageDialog(CustomScriptsPopup.this, //"Changes not saved", "Failure",
+					JOptionPane.showMessageDialog(CustomScriptsPopup.this, 
 							Constant.messages.getString("customFire.custom.csp.failure.msg"),Constant.messages.getString("customFire.custom.csp.failure.title")
 							,JOptionPane.ERROR_MESSAGE);
+					//CustomScriptsPopup.this.setVisible(false);
 				}
 			}
 		});
 		footerPanel.add(btnSaveChanges);
 
-		JButton btnResetChanges = new JButton(Constant.messages.getString("customFire.custom.csp.button.reset"));
+		btnResetChanges = new JButton(Constant.messages.getString("customFire.custom.csp.button.reset"));
 		btnResetChanges.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				int response = JOptionPane.showConfirmDialog(CustomScriptsPopup.this,
-						//"Confirm Reset", "Confirm",
 						Constant.messages.getString("customFire.custom.csp.alert.msg"),Constant.messages.getString("customFire.custom.csp.alert.title")
 						,JOptionPane.YES_NO_OPTION);
 				if (response == JOptionPane.YES_OPTION) {
@@ -117,12 +160,11 @@ public class CustomScriptsPopup extends JFrame {
 		});
 		footerPanel.add(btnResetChanges);
 
-		JButton btnExit = new JButton(Constant.messages.getString("customFire.custom.csp.button.exit"));
+		btnExit = new JButton(Constant.messages.getString("customFire.custom.csp.button.exit"));
 		btnExit.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				int response = JOptionPane.showConfirmDialog(CustomScriptsPopup.this,
-						//"Do You want to save changes before exit?", "Confirm"
 						Constant.messages.getString("customFire.custom.csp.exit.msg"),Constant.messages.getString("customFire.custom.csp.alert.title")
 						,JOptionPane.YES_NO_CANCEL_OPTION);
 				if (response == JOptionPane.YES_OPTION) {
@@ -137,17 +179,16 @@ public class CustomScriptsPopup extends JFrame {
 		footerPanel.add(btnExit);
 		initScriptsExisting();
 		initScriptsNew();
+
+
 	}
 
-	/*public CustomScriptsPopup(ScriptTreePanel thisFrame) {
-		this.scriptTree = thisFrame;
 
-	}*/
 
 	GridBagConstraints panelConstraints = new GridBagConstraints();
 	GridBagConstraints gridBagConstraints = new GridBagConstraints();
 
-	//scriptsPanel contains both new and existing
+	//scriptsPanel contains all scripts : newly added and existing
 	JPanel scriptsPanel = new JPanel();			
 
 	private boolean saveCustomSelectedScripts;
@@ -172,7 +213,6 @@ public class CustomScriptsPopup extends JFrame {
 		panelConstraints.gridy = 0;
 
 		existingscriptsPanel.setBorder(new TitledBorder(null,
-//				"Default Scripts"
 				Constant.messages.getString("customFire.custom.csp.label.default")
 				,TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		scriptsPanel.add(existingscriptsPanel, panelConstraints);
@@ -187,34 +227,27 @@ public class CustomScriptsPopup extends JFrame {
 		gridBagConstraints.gridx = 0;
 
 		String str;
-		try{
-			components = new ArrayList<>();
+		components = new ArrayList<>();
 
-			File file = new File("C:\\"+vulName+".txt");
-			FileReader fr = new FileReader(file);
-			LineNumberReader lnr = new LineNumberReader(fr);
+		String vulNameM = vulName.replace(" ", "");
+		vulNameM = vulNameM.replace(":", "");
+		String fPath = Constant.getDefaultHomeDirectory(false)+"\\fuzzers\\fuzzdb-1.09\\attack-payloads\\"+Constant.messages.getString("customFire.csp."+vulNameM);//TODO M
+		String folderPath = fPath.replace(Constant.FILE_SEPARATOR, Constant.FILE_SEPARATOR+Constant.FILE_SEPARATOR);
 
-			if(file.exists()){
-				while((str=lnr.readLine())!=null){
-					if(lnr.getLineNumber()>0){
-						gridBagConstraints.gridy++;
-					}
-					JCheckBox chkbx = new JCheckBox(str);
-					chkbx.setSelected(true);
-					CustomScriptComponent component = new CustomScriptComponent(chkbx, gridBagConstraints);
-					components.add(component);
-					existingscriptsPanel.add(chkbx, gridBagConstraints);
-				}
+		File folder = new File(folderPath);
 
-			}else{
-				log.error("Scripts file is missing");
-			}
+		if (folder.isDirectory()) {
 
-			lnr.close();
-			fr.close();
+			CScriptsTree ex = new CScriptsTree();
+			tree = ex.getTree(folderPath);
 
-		} catch (IOException e) {
-			e.printStackTrace();
+			gridBagConstraints.fill=GridBagConstraints.HORIZONTAL;
+			existingscriptsPanel.add(tree, gridBagConstraints);
+
+		}
+
+		else{
+			System.out.println("There is no Folder @ given path :" + folderPath);
 		}
 
 		panelConstraints.gridy++;
@@ -227,6 +260,10 @@ public class CustomScriptsPopup extends JFrame {
 		gridBagConstraints.gridy = 0;
 	}
 
+	/**
+	 * For adding new scripts
+	 *  void `
+	 */
 	void initScriptsNew() {
 
 		if(addedScript != null){
@@ -271,7 +308,6 @@ public class CustomScriptsPopup extends JFrame {
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					int response = JOptionPane.showConfirmDialog(CustomScriptsPopup.this,
-							//"Remove Script", "Confirm"
 							Constant.messages.getString("customFire.custom.csp.remove.msg"),Constant.messages.getString("customFire.custom.csp.alert.title")
 							, JOptionPane.YES_NO_OPTION);
 					if (response == JOptionPane.YES_OPTION) {
@@ -290,11 +326,15 @@ public class CustomScriptsPopup extends JFrame {
 		}
 	}
 
-	private boolean saveChanges(){
+	/**
+	 * 
+	 * @return boolean `
+	 */
+	public boolean saveChanges(){
 
 		boolean b = true;
 
-		Component[] componentsExistScriptPanel = existingscriptsPanel.getComponents();
+		/*Component[] componentsExistScriptPanel = existingscriptsPanel.getComponents();
 		Component[] componentsNewScriptPanel = addNewScriptPanel.getComponents();
 
 		List<String> selectedChkbxScripts = new ArrayList<String>();
@@ -314,40 +354,94 @@ public class CustomScriptsPopup extends JFrame {
 					selectedChkbxScripts.add(checkBox.getText());
 				}
 			}
+		}*/
+
+		/*try{ 
+			//Ser
+			CustomScriptsPopup cspSave = CustomScriptsPopup.this;
+			FileOutputStream fos = new FileOutputStream("..\\zap-extensions\\src\\org\\zaproxy\\zap\\extension\\customFire\\resources\\"+vulName+"_Save.ser");//here in P
+			ObjectOutputStream oos = new ObjectOutputStream(fos);
+			oos.writeObject(cspSave);//
+			oos.close();
+			fos.close();
+
+			//Deser
+			FileInputStream fis = new FileInputStream("..\\zap-extensions\\src\\org\\zaproxy\\zap\\extension\\customFire\\resources\\"+vulName+"_Save.ser");
+			ObjectInputStream ois = new ObjectInputStream(fis);
+			CustomScriptsPopup si = new CustomScriptsPopup(vulName);
+			si = (CustomScriptsPopup)ois.readObject();
+			si.setVisible(true);
+			ois.close();
+			fis.close();
+
 		}
 
-		try{
-
-			File f = new File("..\\zap-extensions\\src\\org\\zaproxy\\zap\\extension\\customFire\\resources\\test.txt");
-			FileWriter fw = new FileWriter(f, false);
-			BufferedWriter bw = new BufferedWriter(fw);
-			for(String s : selectedChkbxScripts){
-				bw.write(s);
-				bw.newLine();
-			}
-			b = true;
-			bw.close();
-			fw.close();
-		}
-
-		catch (IOException e1){
+		catch (Exception e1){
 			b=false;
 			e1.printStackTrace();
-		}		
+		} */		
+		
+		JFileChooser chooser = new JFileChooser(Constant.getPoliciesDir());
+        File file = new File(Constant.getZapHome(), vulName+".ser");
+        chooser.setSelectedFile(file);
+
+        chooser.setFileFilter(new FileFilter() {
+            @Override
+            public boolean accept(File file) {
+                if (file.isDirectory()) {
+                    return true;
+                } else if (file.isFile() && file.getName().endsWith(".ser")) {
+                    return true;
+                }
+                return false;
+            }
+
+            @Override
+            public String getDescription() {
+                return Constant.messages.getString("customFire.custom.file.format.csp.ser");
+            }
+        });
+        int rc = chooser.showSaveDialog(View.getSingleton().getMainFrame());
+        if (rc == JFileChooser.APPROVE_OPTION) {
+            file = chooser.getSelectedFile();
+            if (file == null) {
+                b = false;
+            }
+            try {
+            	CustomScriptsPopup cspSave = CustomScriptsPopup.this;
+            	FileOutputStream fos = new FileOutputStream(file);
+    			ObjectOutputStream oos = new ObjectOutputStream(fos);
+    			oos.writeObject(cspSave);
+    			oos.close();
+    			fos.close();
+                
+            } catch (IOException e1) {
+                //View.getSingleton().showWarningDialog(Constant.messages.getString("customFire.custom.ser.save.error"));
+            	b = false;
+            }
+        }
+        if (rc == JFileChooser.CANCEL_OPTION) {
+        	chooser.setVisible(false);
+        	b = false;
+        }
+			
 		return b;
 	}
 
-	private void resetChanges(){
+	/**
+	 * 
+	 *  void `
+	 */
+	public void resetChanges(){
 		try {		            
 			removeAddedScripts(addNewScriptPanel);
 			removeAddedScripts(existingscriptsPanel);
 			initScriptsExisting();
 		} catch(Exception e1) {
 			JOptionPane.showMessageDialog(CustomScriptsPopup.this, 
-					//"Reset Failed","Failed"
 					Constant.messages.getString("customFire.custom.csp.reset.fail.msg"),Constant.messages.getString("customFire.custom.csp.failure.title")
 					,JOptionPane.ERROR_MESSAGE);
-			log.error("Resetting scripts failed");
+			//log.error("Resetting scripts failed");
 		}
 	}
 
@@ -363,7 +457,6 @@ public class CustomScriptsPopup extends JFrame {
 		}
 		else{
 			JOptionPane.showMessageDialog(CustomScriptsPopup.this, 
-					//"Script Exists already!", "Script Exists!"
 					Constant.messages.getString("customFire.custom.csp.error.scriptExists"),Constant.messages.getString("customFire.custom.csp.error.scriptExists.title")
 					, JOptionPane.ERROR_MESSAGE);
 		}
@@ -378,7 +471,6 @@ public class CustomScriptsPopup extends JFrame {
 		}
 		else{
 			JOptionPane.showMessageDialog(CustomScriptsPopup.this, 
-					//"Script Exists already!", "Script Exists!"
 					Constant.messages.getString("customFire.custom.csp.error.scriptExists"),Constant.messages.getString("customFire.custom.csp.error.scriptExists.title")
 					, JOptionPane.ERROR_MESSAGE);
 		}
@@ -399,15 +491,25 @@ public class CustomScriptsPopup extends JFrame {
 	/**
 	 * 
 	 * @param s
-	 * @return boolean `
+	 * @return boolean 
 	 */
 	public boolean checkIfScriptExists(String s) {
 		boolean b = false;
-		Component[] componentsExistScriptPanel = existingscriptsPanel.getComponents();
-		for (Component component2 : componentsExistScriptPanel) {
-			if (component2 instanceof JCheckBox) {
-				JCheckBox checkBox = (JCheckBox) component2;
-				if(s.equals(checkBox.getText())){
+
+		ArrayList<DefaultMutableTreeNode> leafs = new ArrayList<DefaultMutableTreeNode>();
+		DefaultTreeModel model = (DefaultTreeModel)tree.getModel();
+		final DefaultMutableTreeNode root = (DefaultMutableTreeNode)model.getRoot();
+		DefaultMutableTreeNode firstLeaf = root.getFirstLeaf();
+		leafs.add(firstLeaf);
+		DefaultMutableTreeNode tmpLeaf = firstLeaf.getNextLeaf();
+		while(tmpLeaf!=null){
+			leafs.add(tmpLeaf);
+			tmpLeaf = tmpLeaf.getNextLeaf();
+		}
+		for(DefaultMutableTreeNode leaf : leafs){
+			if(leaf.getUserObject() instanceof CheckBoxNode){
+				CheckBoxNode checkBox = (CheckBoxNode) leaf.getUserObject();
+				if(s.trim().equals(checkBox.getText().trim())){
 					b=true;
 					return b;
 				}
@@ -420,7 +522,7 @@ public class CustomScriptsPopup extends JFrame {
 		for (Component component2 : componentsNewScriptPanel) {
 			if (component2 instanceof JCheckBox) {
 				JCheckBox checkBox = (JCheckBox) component2;
-				if(s.equals(checkBox.getText())){
+				if(s.trim().equals(checkBox.getText())){
 					b=true;
 					return b;
 				}
@@ -431,4 +533,79 @@ public class CustomScriptsPopup extends JFrame {
 
 		return b;
 	}
+
+	/**
+	 * @return the btnAddNewScript
+	 */
+	public JButton getBtnAddNewScript() {
+		if (btnAddNewScript == null ) {
+			btnAddNewScript = new JButton(Constant.messages.getString("customFire.custom.csp.button.addNewScript"));
+			
+		}
+		return btnAddNewScript;
+	}
+
+	/**
+	 * @param btnAddNewScript the btnAddNewScript to set
+	 */
+	public void setBtnAddNewScript(JButton btnAddNewScript) {
+		this.btnAddNewScript = btnAddNewScript;
+	}
+
+	/**
+	 * @return the btnSaveChanges
+	 */
+	public JButton getBtnSaveChanges() {
+		if (btnSaveChanges == null ) {
+			btnSaveChanges = new JButton(Constant.messages.getString("customFire.custom.csp.button.save"));
+			
+		}
+		return btnSaveChanges;
+	}
+
+	/**
+	 * @param btnSaveChanges the btnSaveChanges to set
+	 */
+	public void setBtnSaveChanges(JButton btnSaveChanges) {
+		this.btnSaveChanges = btnSaveChanges;
+	}
+
+	/**
+	 * @return the btnResetChanges
+	 */
+	public JButton getBtnResetChanges() {
+		if (btnResetChanges == null ) {
+			btnResetChanges = new JButton(Constant.messages.getString("customFire.custom.csp.button.reset"));
+			
+		}
+		return btnResetChanges;
+	}
+
+	/**
+	 * @param btnResetChanges the btnResetChanges to set
+	 */
+	public void setBtnResetChanges(JButton btnResetChanges) {
+		this.btnResetChanges = btnResetChanges;
+	}
+
+	/**
+	 * @return the btnExit
+	 */
+	public JButton getBtnExit() {
+		if (btnExit == null ) {
+			btnExit = new JButton(Constant.messages.getString("customFire.custom.csp.button.exit"));
+			
+		}
+		return btnExit;
+	}
+
+	/**
+	 * @param btnExit the btnExit to set
+	 */
+	public void setBtnExit(JButton btnExit) {
+		this.btnExit = btnExit;
+	}
+
+	
+
 }
