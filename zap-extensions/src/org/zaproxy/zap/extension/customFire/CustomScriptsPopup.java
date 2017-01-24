@@ -68,7 +68,7 @@ public class CustomScriptsPopup extends JFrame {
 
 
 	JPanel existingscriptsPanel = new JPanel();
-	final JPanel addNewScriptPanel = new JPanel(); 
+	JPanel addNewScriptPanel = new JPanel(); 
 
 	String vulName;
 	ScriptTreePanel stp;//un
@@ -84,6 +84,9 @@ public class CustomScriptsPopup extends JFrame {
 	private JButton btnSaveChanges;
 	private JButton btnResetChanges;
 	private JButton btnExit;
+	List<JCheckBox> addedchkbxlist = new ArrayList<JCheckBox>();
+	List<JButton> btnRemoveAddedScriptlist = new ArrayList<JButton>();
+	
 
 
 	/**
@@ -272,6 +275,8 @@ public class CustomScriptsPopup extends JFrame {
 			gridBagConstraints.gridx++;
 
 			final JCheckBox addedchkbx = new JCheckBox(addedScript);
+//			addedchkbx = new JCheckBox(addedScript);
+			
 			addedchkbx.setSelected(true);	
 			addNewScriptPanel.add(addedchkbx, gridBagConstraints);
 
@@ -302,9 +307,10 @@ public class CustomScriptsPopup extends JFrame {
 				}
 
 			});
+			addedchkbxlist.add(addedchkbx);
 			gridBagConstraints.gridx++;
-			final JButton btnRemoveAttribute = new JButton(Constant.messages.getString("customFire.custom.csp.button.remove"));
-			btnRemoveAttribute.addActionListener(new ActionListener() {
+			final JButton btnRemoveAddedScript = new JButton(Constant.messages.getString("customFire.custom.csp.button.remove"));
+			btnRemoveAddedScript.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					int response = JOptionPane.showConfirmDialog(CustomScriptsPopup.this,
@@ -312,15 +318,19 @@ public class CustomScriptsPopup extends JFrame {
 							, JOptionPane.YES_NO_OPTION);
 					if (response == JOptionPane.YES_OPTION) {
 						addNewScriptPanel.remove(addedchkbx);
-						addNewScriptPanel.remove(btnRemoveAttribute);
+						addNewScriptPanel.remove(btnRemoveAddedScript);
 
 						addNewScriptPanel.updateUI();
 						addNewScriptPanel.revalidate();
 					}
 				}
 			});
-
-			addNewScriptPanel.add(btnRemoveAttribute, gridBagConstraints);
+			
+			
+			btnRemoveAddedScriptlist.add(btnRemoveAddedScript);
+			
+			
+			addNewScriptPanel.add(btnRemoveAddedScript, gridBagConstraints);
 
 			gridBagConstraints.gridy++;
 		}
@@ -605,7 +615,5 @@ public class CustomScriptsPopup extends JFrame {
 	public void setBtnExit(JButton btnExit) {
 		this.btnExit = btnExit;
 	}
-
-	
 
 }

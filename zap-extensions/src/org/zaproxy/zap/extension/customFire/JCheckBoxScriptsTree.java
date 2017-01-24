@@ -175,7 +175,9 @@ public class JCheckBoxScriptsTree extends JTree {
 			altLabel.setText(textRepresentation);
 
 			return this;
-		}       
+		}
+
+
 	}
 
 	public JCheckBoxScriptsTree() {
@@ -184,6 +186,7 @@ public class JCheckBoxScriptsTree extends JTree {
 		this.setToggleClickCount(0);
 		// Overriding cell renderer by new one defined above
 		CheckBoxCellRenderer cellRenderer = new CheckBoxCellRenderer();
+
 		this.setCellRenderer(cellRenderer);
 
 		// Overriding selection model by an empty one
@@ -214,7 +217,8 @@ public class JCheckBoxScriptsTree extends JTree {
 				if (! nodesCheckingState.get(tp).isCheckBoxEnabled) {
 					return;
 				}
-				boolean checkMode = ! nodesCheckingState.get(tp).isSelected;
+
+				boolean checkMode = ! ((CheckedNode)nodesCheckingState.get(tp)).isSelected;
 				checkSubTree(tp, checkMode);
 				updatePredecessorsWithCheckMode(tp, checkMode);
 				// Firing the check change event
@@ -346,6 +350,25 @@ public class JCheckBoxScriptsTree extends JTree {
 		updatePredecessorsAllChildrenSelectedState(parentPath);
 	}
 
+	public void check1(TreePath tp, boolean s){
+		if (tp == null) {
+			return;
+		}
+		if (! nodesCheckingState.get(tp).isCheckBoxEnabled) {
+			return;
+		}
+		boolean checkMode;
+		if(s){
+			checkMode = ! nodesCheckingState.get(tp).isSelected;
+		}else{
+			checkMode =  nodesCheckingState.get(tp).isSelected;
+		}
+		checkSubTree(tp, checkMode);
+		updatePredecessorsWithCheckMode(tp, checkMode);
+		// Firing the check change event
+		fireCheckChangeEvent(new CheckChangeEvent(new Object()));
+	}
+
 	public void setCheckBoxEnabled(TreePath tp, boolean enabled) {
 		nodesCheckingState.get(tp).isCheckBoxEnabled = enabled;
 		JCheckBoxScriptsTree.this.repaint();                          
@@ -368,7 +391,7 @@ public class JCheckBoxScriptsTree extends JTree {
 		p.add(scroll, BorderLayout.CENTER);
 
 		DefaultMutableTreeNode root = new DefaultMutableTreeNode("Tech");
-		
+
 		DefaultMutableTreeNode db = new DefaultMutableTreeNode("Db");
 		root.add(db);
 		db.add(new DefaultMutableTreeNode("HypersonicSQL"));
@@ -379,13 +402,13 @@ public class JCheckBoxScriptsTree extends JTree {
 		DefaultMutableTreeNode os = new DefaultMutableTreeNode("OS");
 		root.add(os);
 		os.add(new DefaultMutableTreeNode("Linux"));
-		
+
 		DefaultMutableTreeNode ws = new DefaultMutableTreeNode("WS");
 		root.add(ws);
 		DefaultTreeModel model = new DefaultTreeModel(root);
-		
+
 		cbt.setModel(model);
-		
+
 
 
 		f.setVisible(true);

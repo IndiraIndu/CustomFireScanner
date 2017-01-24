@@ -19,6 +19,8 @@ import javax.swing.JTree;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.event.PopupMenuEvent;
+import javax.swing.event.PopupMenuListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
@@ -198,7 +200,7 @@ public class CScriptsTree {
 
 						tree.add(popup);
 						popup.setVisible(true);
-						
+							
 						menuItem0.addChangeListener(new ChangeListener() {
 
 							@Override

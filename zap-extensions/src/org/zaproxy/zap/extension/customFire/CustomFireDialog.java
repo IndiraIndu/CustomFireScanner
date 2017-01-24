@@ -685,7 +685,7 @@ public class CustomFireDialog extends StandardFieldsDialog {
 					FileInputStream fis = new FileInputStream(file.getPath());
 					ObjectInputStream ois = new ObjectInputStream(fis);
 					stp = (ScriptTreePanel)ois.readObject();
-					stp.addScriptTreeListener(stp);
+					stp.addScriptTreeListener(stp, true);
 					ois.close();
 					fis.close();
 
@@ -814,7 +814,7 @@ public class CustomFireDialog extends StandardFieldsDialog {
 		if (refreshUi) {
 			init(target);
 			repaint();
-			sTree.reset();
+			//sTree.reset();
 		}
 	}
 

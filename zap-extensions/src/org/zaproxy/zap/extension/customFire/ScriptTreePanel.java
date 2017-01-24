@@ -47,6 +47,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.SwingUtilities;
 import javax.swing.border.EtchedBorder;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -57,7 +58,7 @@ import javax.swing.tree.TreePath;
 import org.parosproxy.paros.Constant;
 import org.parosproxy.paros.view.View;
 import org.zaproxy.zap.extension.customFire.JCheckBoxScriptsTree.CheckChangeEvent;
-import org.zaproxy.zap.extension.customFire.JCheckBoxScriptsTree.CheckChangeEventListener;
+import org.zaproxy.zap.extension.customFire.JCheckBoxScriptsTree.CheckedNode;
 import org.zaproxy.zap.view.JCheckBoxTree;
 
 
@@ -81,12 +82,14 @@ public class ScriptTreePanel extends JPanel {
 	private static final long serialVersionUID = 5514692105773714202L;
 
 	private final JCheckBoxScriptsTree scriptTree;
-	
+
 	private final HashMap<Script, DefaultMutableTreeNode> scriptToNodeMap;
 
 	ExtensionCustomFire ext = new ExtensionCustomFire();
 
 	List<String> pList = new ArrayList<String>();
+
+	//HashMap<TreePath, CheckedNode> nodesCheckingState;
 
 	public ScriptTreePanel(String nameRootNode) {
 		setLayout(new BorderLayout());
@@ -142,14 +145,14 @@ public class ScriptTreePanel extends JPanel {
 		}
 
 
-		
+
 		scriptTree.setModel(new DefaultTreeModel(root));
 
 		scriptTree.setRootVisible(true);
 		scriptTree.setShowsRootHandles(false);
-		
-		addScriptTreeListener(this);
-		
+
+		addScriptTreeListener(this, false);
+
 		/*scriptTree.addMouseListener(new MouseListener() {
 
 			@Override
@@ -174,7 +177,7 @@ public class ScriptTreePanel extends JPanel {
 
 			@Override
 			public void mouseClicked(MouseEvent e) {
-							
+
 				if(e.getClickCount()==2){
 					//Do deser
 					String vulName = pList.get((scriptTree.getRowForLocation(e.getX(), e.getY())-1));
@@ -218,7 +221,7 @@ public class ScriptTreePanel extends JPanel {
 
 								}
 							});
-							
+
 							scriptPopupUI1.getBtnSaveChanges().addActionListener(new ActionListener() {
 								@Override
 								public void actionPerformed(ActionEvent e) {
@@ -236,9 +239,9 @@ public class ScriptTreePanel extends JPanel {
 									}
 								}
 							});
-							
 
-							
+
+
 							scriptPopupUI1.getBtnResetChanges().addActionListener(new ActionListener() {
 								@Override
 								public void actionPerformed(ActionEvent e) {
@@ -250,7 +253,7 @@ public class ScriptTreePanel extends JPanel {
 									}
 								}
 							});
-							
+
 							scriptPopupUI1.getBtnExit().addActionListener(new ActionListener() {
 								@Override
 								public void actionPerformed(ActionEvent e) {
@@ -266,9 +269,9 @@ public class ScriptTreePanel extends JPanel {
 									}
 								}
 							});
-							
+
 							scriptPopupUI = scriptPopupUI1;
-							
+
 							ois.close();
 							fis.close();
 						} catch ( IOException | ClassNotFoundException e1) {
@@ -296,7 +299,7 @@ public class ScriptTreePanel extends JPanel {
 		add(scrollPane, BorderLayout.CENTER);
 
 	}
-	
+
 	/**
 	 * 
 	 *  void `
@@ -304,75 +307,61 @@ public class ScriptTreePanel extends JPanel {
 	public void saveScriptsState(){
 		//Do ser
 		JFileChooser chooser = new JFileChooser(Constant.getPoliciesDir());
-        File file = new File(Constant.getZapHome(), "Scripts.ser");
-        chooser.setSelectedFile(file);
+		File file = new File(Constant.getZapHome(), "Scripts.ser");
+		chooser.setSelectedFile(file);
 
-        chooser.setFileFilter(new FileFilter() {
-            @Override
-            public boolean accept(File file) {
-                if (file.isDirectory()) {
-                    return true;
-                } else if (file.isFile() && file.getName().endsWith(".ser")) {
-                    return true;
-                }
-                return false;
-            }
+		chooser.setFileFilter(new FileFilter() {
+			@Override
+			public boolean accept(File file) {
+				if (file.isDirectory()) {
+					return true;
+				} else if (file.isFile() && file.getName().endsWith(".ser")) {
+					return true;
+				}
+				return false;
+			}
 
-            @Override
-            public String getDescription() {
-                return Constant.messages.getString("customFire.custom.file.format.csp.ser");
-            }
-        });
-        int rc = chooser.showSaveDialog(View.getSingleton().getMainFrame());
-        if (rc == JFileChooser.APPROVE_OPTION) {
-            file = chooser.getSelectedFile();
-            if (file == null) {
-               return;
-            }
-            try {
-            	//ScriptTreePanel stp = new ScriptTreePanel(Constant.messages.getString("customFire.custom.tab.script.node"));
-            	FileOutputStream fos = new FileOutputStream(file);
-    			ObjectOutputStream oos = new ObjectOutputStream(fos);
-    			oos.writeObject(ScriptTreePanel.this);
-    			oos.close();
-    			fos.close();
-    			View.getSingleton().showMessageDialog(Constant.messages.getString("customFire.custom.ser.saveScripts.success"));
-                
-            } catch (IOException e1) {
-                View.getSingleton().showWarningDialog(Constant.messages.getString("customFire.custom.ser.save.error"));
-            	return;
-            }
-        }
-        if (rc == JFileChooser.CANCEL_OPTION) {
-        	chooser.setVisible(false);
-        	return;
-        }
-		
-	
+			@Override
+			public String getDescription() {
+				return Constant.messages.getString("customFire.custom.file.format.csp.ser");
+			}
+		});
+		int rc = chooser.showSaveDialog(View.getSingleton().getMainFrame());
+		if (rc == JFileChooser.APPROVE_OPTION) {
+			file = chooser.getSelectedFile();
+			if (file == null) {
+				return;
+			}
+			try {
+				//ScriptTreePanel stp = new ScriptTreePanel(Constant.messages.getString("customFire.custom.tab.script.node"));
+				FileOutputStream fos = new FileOutputStream(file);
+				ObjectOutputStream oos = new ObjectOutputStream(fos);
+				oos.writeObject(ScriptTreePanel.this);
+				oos.close();
+				fos.close();
+				View.getSingleton().showMessageDialog(Constant.messages.getString("customFire.custom.ser.saveScripts.success"));
+
+			} catch (IOException e1) {
+				View.getSingleton().showWarningDialog(Constant.messages.getString("customFire.custom.ser.save.error"));
+				return;
+			}
+		}
+		if (rc == JFileChooser.CANCEL_OPTION) {
+			chooser.setVisible(false);
+			return;
+		}
+
+
 	}
-	
+
+
 	/**
 	 * 
 	 * @param stp
 	 * @return JCheckBoxTree `
 	 */
-	public ScriptTreePanel addScriptTreeListener(final ScriptTreePanel stp){
-		
-		/*stp.scriptTree.addCheckChangeEventListener(new CheckChangeEventListener(){
+	public ScriptTreePanel addScriptTreeListener(final ScriptTreePanel stp, final boolean s){
 
-			@Override
-			public void checkStateChanged(CheckChangeEvent event) {
-				Object[] listeners = stp.getScriptTree().getListeners(CheckChangeEventListener.class);
-				for (int i = 0; i < listeners.length; i++) {
-					if (listeners[i] == CheckChangeEventListener.class) {
-						((CheckChangeEventListener) listeners[i + 1]).checkStateChanged(event);
-					}
-				}
-				
-			}
-			
-		});*/
-		
 		stp.scriptTree.addMouseListener(new MouseListener() {
 
 			@Override
@@ -398,15 +387,12 @@ public class ScriptTreePanel extends JPanel {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 
-				/*if(e.getClickCount()==1){
-					TreePath tp = scriptTree.getPathForRow(scriptTree.getRowForLocation(e.getX(), e.getY()));
-					DefaultMutableTreeNode node = (DefaultMutableTreeNode) tp.getLastPathComponent();	
-					
-					
-				}*/
+				TreePath tp = scriptTree.getPathForLocation(e.getX(), e.getY());
+				scriptTree.check1(tp, s);
+				scriptTree.repaint();
 
 				if(e.getClickCount()==2){
-					//Do deser
+
 					String vulName = pList.get((scriptTree.getRowForLocation(e.getX(), e.getY())-1));
 					CustomScriptsPopup scriptPopupUI = new CustomScriptsPopup(vulName);
 					JFileChooser chooser = new JFileChooser(Constant.getZapHome());
@@ -437,8 +423,9 @@ public class ScriptTreePanel extends JPanel {
 						try {
 							FileInputStream fis = new FileInputStream(file.getPath());
 							ObjectInputStream ois = new ObjectInputStream(fis);
-							//CustomScriptsPopup scriptPopupUI1 = new CustomScriptsPopup(vulName);
+							
 							final CustomScriptsPopup scriptPopupUI1 = (CustomScriptsPopup)ois.readObject();
+							
 							scriptPopupUI1.getBtnAddNewScript().addActionListener(new ActionListener() {
 								@Override
 								public void actionPerformed(ActionEvent e) {
@@ -448,7 +435,7 @@ public class ScriptTreePanel extends JPanel {
 
 								}
 							});
-							
+
 							scriptPopupUI1.getBtnSaveChanges().addActionListener(new ActionListener() {
 								@Override
 								public void actionPerformed(ActionEvent e) {
@@ -466,9 +453,9 @@ public class ScriptTreePanel extends JPanel {
 									}
 								}
 							});
-							
 
-							
+
+
 							scriptPopupUI1.getBtnResetChanges().addActionListener(new ActionListener() {
 								@Override
 								public void actionPerformed(ActionEvent e) {
@@ -480,7 +467,7 @@ public class ScriptTreePanel extends JPanel {
 									}
 								}
 							});
-							
+
 							scriptPopupUI1.getBtnExit().addActionListener(new ActionListener() {
 								@Override
 								public void actionPerformed(ActionEvent e) {
@@ -496,9 +483,62 @@ public class ScriptTreePanel extends JPanel {
 									}
 								}
 							});
-							
+
+							for(int i=0; i<scriptPopupUI1.btnRemoveAddedScriptlist.size(); i++){
+								final JButton b = scriptPopupUI1.btnRemoveAddedScriptlist.get(i);
+								final JCheckBox c = scriptPopupUI1.addedchkbxlist.get(i);
+								b.addActionListener(new ActionListener() {
+									@Override
+									public void actionPerformed(ActionEvent e) {
+										int response = JOptionPane.showConfirmDialog(scriptPopupUI1,
+												Constant.messages.getString("customFire.custom.csp.remove.msg"),Constant.messages.getString("customFire.custom.csp.alert.title")
+												, JOptionPane.YES_NO_OPTION);
+										if (response == JOptionPane.YES_OPTION) {
+											scriptPopupUI1.addNewScriptPanel.remove(c);
+											scriptPopupUI1.addNewScriptPanel.remove(b);
+
+											scriptPopupUI1.addNewScriptPanel.updateUI();
+											scriptPopupUI1.addNewScriptPanel.revalidate();
+										}
+
+									}
+								});
+							}
+
+							for(int i=0; i<scriptPopupUI1.addedchkbxlist.size(); i++){
+								final JCheckBox c = scriptPopupUI1.addedchkbxlist.get(i);
+								c.addMouseListener(new MouseListener(){
+
+									@Override
+									public void mouseClicked(MouseEvent e) {
+										if (e.getClickCount() == 2) {
+											AddEditNewScriptUI dialog = new AddEditNewScriptUI(scriptPopupUI1, "Edit Script",c);
+											dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+											dialog.setVisible(true);
+										}
+									}
+									@Override
+									public void mousePressed(MouseEvent e) {
+									}
+
+									@Override
+									public void mouseReleased(MouseEvent e) {
+									}
+
+									@Override
+									public void mouseEntered(MouseEvent e) {
+									}
+
+									@Override
+									public void mouseExited(MouseEvent e) {
+									}
+
+								});
+
+							}
+
 							scriptPopupUI = scriptPopupUI1;
-							
+														
 							ois.close();
 							fis.close();
 						} catch ( IOException | ClassNotFoundException e1) {
@@ -513,12 +553,14 @@ public class ScriptTreePanel extends JPanel {
 						scriptPopupUI.toFront();
 					}
 
-				}//double click
+				}
 			} });
-				
+
 		return stp;
-		
+
 	}
+
+
 
 
 	/**
