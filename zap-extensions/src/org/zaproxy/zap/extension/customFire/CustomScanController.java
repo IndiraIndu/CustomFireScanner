@@ -150,7 +150,7 @@ public class CustomScanController implements ScanController<CustomScan>, Seriali
 					} else if (obj instanceof TechSet) {
 						customScan.setTechSet((TechSet) obj);
 						techOverridden = true;
-					} else if (obj instanceof ScriptCollection) {
+					} else if (obj instanceof ScriptCollection) { //TODO
 						customScan.addScriptCollection((ScriptCollection)obj);
 					} else {
 						//logger.error("Unexpected contextSpecificObject: " + obj.getClass().getCanonicalName());

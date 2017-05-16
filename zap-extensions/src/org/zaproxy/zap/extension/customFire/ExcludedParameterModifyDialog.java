@@ -22,7 +22,8 @@ package org.zaproxy.zap.extension.customFire;
 import java.awt.Dialog;
 
 import org.parosproxy.paros.Constant;
-import org.parosproxy.paros.core.scanner.ScannerParamFilter;
+import org.zaproxy.zap.extension.customFire.ScannerParamFilter;
+//import org.parosproxy.paros.core.scanner.ScannerParamFilter;
 
 /**
  * 

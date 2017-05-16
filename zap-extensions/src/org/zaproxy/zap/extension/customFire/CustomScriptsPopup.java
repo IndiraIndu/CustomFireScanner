@@ -138,7 +138,7 @@ public class CustomScriptsPopup extends JFrame {
 					JOptionPane.showMessageDialog(CustomScriptsPopup.this, 
 							Constant.messages.getString("customFire.custom.csp.success.msg"),Constant.messages.getString("customFire.custom.csp.success.title")
 							,JOptionPane.INFORMATION_MESSAGE);
-					CustomScriptsPopup.this.setVisible(false);
+					//CustomScriptsPopup.this.setVisible(false);
 				} else {
 					JOptionPane.showMessageDialog(CustomScriptsPopup.this, 
 							Constant.messages.getString("customFire.custom.csp.failure.msg"),Constant.messages.getString("customFire.custom.csp.failure.title")

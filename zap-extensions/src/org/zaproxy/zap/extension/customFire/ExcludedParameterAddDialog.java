@@ -32,7 +32,8 @@ import javax.swing.event.DocumentListener;
 
 import org.parosproxy.paros.Constant;
 import org.parosproxy.paros.core.scanner.NameValuePair;
-import org.parosproxy.paros.core.scanner.ScannerParamFilter;
+import org.zaproxy.zap.extension.customFire.ScannerParamFilter;
+//import org.parosproxy.paros.core.scanner.ScannerParamFilter;
 import org.zaproxy.zap.utils.ZapTextField;
 import org.zaproxy.zap.view.AbstractFormDialog;
 

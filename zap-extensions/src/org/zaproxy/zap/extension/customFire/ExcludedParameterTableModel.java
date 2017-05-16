@@ -22,8 +22,12 @@ package org.zaproxy.zap.extension.customFire;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.swing.JPanel;
+
 import org.parosproxy.paros.Constant;
-import org.parosproxy.paros.core.scanner.ScannerParamFilter;
+//import org.parosproxy.paros.core.scanner.ScannerParamFilter;
+import org.zaproxy.zap.extension.customFire.ScannerParamFilter;
 import org.zaproxy.zap.view.AbstractMultipleOptionsBaseTableModel;
 
 /**
@@ -102,4 +106,5 @@ public class ExcludedParameterTableModel extends AbstractMultipleOptionsBaseTabl
 
         fireTableDataChanged();
     }
+   
 }

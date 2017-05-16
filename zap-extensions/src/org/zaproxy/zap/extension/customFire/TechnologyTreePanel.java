@@ -20,6 +20,12 @@
 package org.zaproxy.zap.extension.customFire;
 
 import java.awt.BorderLayout;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -29,18 +35,24 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import javax.swing.BorderFactory;
+import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.border.EtchedBorder;
+import javax.swing.filechooser.FileFilter;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
 import org.apache.commons.lang.ArrayUtils;
-import org.zaproxy.zap.model.Tech;
-import org.zaproxy.zap.model.TechSet;
-import org.zaproxy.zap.view.JCheckBoxTree;
+import org.parosproxy.paros.Constant;
+import org.parosproxy.paros.view.View;
+//import org.zaproxy.zap.model.Tech;
+//import org.zaproxy.zap.model.TechSet;
+//import org.zaproxy.zap.view.JCheckBoxTree;
+import org.zaproxy.zap.extension.customFire.Tech;
+import org.zaproxy.zap.extension.customFire.TechSet;
 
 /**
  * 
@@ -59,14 +71,14 @@ public class TechnologyTreePanel extends JPanel {
 
     private static final long serialVersionUID = 5514692105773714202L;
 
-    private final JCheckBoxTree techTree;
+    private final JCheckBoxScriptsTree techTree;
     private final HashMap<Tech, DefaultMutableTreeNode> techToNodeMap;
 
     public TechnologyTreePanel(String nameRootNode) {
         setLayout(new BorderLayout());
 
         techToNodeMap = new HashMap<>();
-        techTree = new JCheckBoxTree() {
+        techTree = new JCheckBoxScriptsTree() {
 
             private static final long serialVersionUID = 1L;
 
@@ -187,4 +199,93 @@ public class TechnologyTreePanel extends JPanel {
         }
         return false;
     }
+
+    /**
+     * To save tech settings
+     *  void `
+     */
+	public void saveTechState() {
+
+		//Do Tech ser
+		JFileChooser chooser = new JFileChooser(Constant.getPoliciesDir());
+		File file = new File(Constant.getZapHome(), "Tech.ser");
+		chooser.setSelectedFile(file);
+
+		chooser.setFileFilter(new FileFilter() {
+			@Override
+			public boolean accept(File file) {
+				if (file.isDirectory()) {
+					return true;
+				} else if (file.isFile() && file.getName().endsWith(".ser")) {
+					return true;
+				}
+				return false;
+			}
+
+			@Override
+			public String getDescription() {
+				return Constant.messages.getString("customFire.custom.file.format.csp.ser");
+			}
+		});
+		int rc = chooser.showSaveDialog(View.getSingleton().getMainFrame());
+		if (rc == JFileChooser.APPROVE_OPTION) {
+			file = chooser.getSelectedFile();
+			if (file == null) {
+				return;
+			}
+			try {
+				
+				FileOutputStream fos = new FileOutputStream(file);
+				ObjectOutputStream oos = new ObjectOutputStream(fos);
+				oos.writeObject(TechnologyTreePanel.this);
+				oos.close();
+				fos.close();
+				View.getSingleton().showMessageDialog(Constant.messages.getString("customFire.custom.ser.saveTech.success"));
+
+			} catch (IOException e1) {
+				View.getSingleton().showWarningDialog(Constant.messages.getString("customFire.custom.ser.saveTech.error"));
+				return;
+			}
+		}
+		if (rc == JFileChooser.CANCEL_OPTION) {
+			chooser.setVisible(false);
+			return;
+		}
+	
+	}
+	
+	public TechnologyTreePanel addTechTreeListener(final TechnologyTreePanel ttp, final boolean s){
+		
+		ttp.techTree.addMouseListener(new MouseListener() {
+			
+			@Override
+			public void mouseReleased(MouseEvent e) {
+			}
+			
+			@Override
+			public void mousePressed(MouseEvent e) {
+			}
+			
+			@Override
+			public void mouseExited(MouseEvent e) {
+			}
+			
+			@Override
+			public void mouseEntered(MouseEvent e) {
+			}
+			
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				TreePath tp = techTree.getPathForLocation(e.getX(), e.getY());
+				techTree.check1(tp, s);
+				techTree.repaint();
+				
+			}
+		});
+		
+		return ttp;
+	}
+
+	
+	
 }

@@ -301,7 +301,7 @@ public class ScriptTreePanel extends JPanel {
 	}
 
 	/**
-	 * 
+	 * For saving the Scripts tab state
 	 *  void `
 	 */
 	public void saveScriptsState(){
@@ -366,22 +366,18 @@ public class ScriptTreePanel extends JPanel {
 
 			@Override
 			public void mouseReleased(MouseEvent e) {
-				// TODO Auto-generated method stub
 			}
 
 			@Override
 			public void mousePressed(MouseEvent e) {
-				// TODO Auto-generated method stub
 			}
 
 			@Override
 			public void mouseExited(MouseEvent e) {
-				// TODO Auto-generated method stub
 			}
 
 			@Override
 			public void mouseEntered(MouseEvent e) {
-				// TODO Auto-generated method stub
 			}
 
 			@Override
@@ -444,7 +440,7 @@ public class ScriptTreePanel extends JPanel {
 										JOptionPane.showMessageDialog(scriptPopupUI1, 
 												Constant.messages.getString("customFire.custom.csp.success.msg"),Constant.messages.getString("customFire.custom.csp.success.title")
 												,JOptionPane.INFORMATION_MESSAGE);
-										scriptPopupUI1.setVisible(false);
+										//scriptPopupUI1.setVisible(false);
 									} else {
 										JOptionPane.showMessageDialog(scriptPopupUI1, 
 												Constant.messages.getString("customFire.custom.csp.failure.msg"),Constant.messages.getString("customFire.custom.csp.failure.title")
@@ -536,8 +532,9 @@ public class ScriptTreePanel extends JPanel {
 								});
 
 							}
-
+							
 							scriptPopupUI = scriptPopupUI1;
+							
 														
 							ois.close();
 							fis.close();

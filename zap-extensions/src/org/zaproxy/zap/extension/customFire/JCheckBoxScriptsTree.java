@@ -14,9 +14,13 @@ import java.util.HashSet;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
+import javax.swing.ListCellRenderer;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Highlighter.Highlight;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.DefaultTreeSelectionModel;
@@ -24,6 +28,8 @@ import javax.swing.tree.TreeCellRenderer;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
+
+import org.zaproxy.zap.utils.ZapTextArea;
 
 public class JCheckBoxScriptsTree extends JTree {
 
@@ -49,6 +55,8 @@ public class JCheckBoxScriptsTree extends JTree {
 	}
 	HashMap<TreePath, CheckedNode> nodesCheckingState;
 	HashSet<TreePath> checkedPaths = new HashSet<TreePath>();
+	
+	private ZapTextArea requestField = null;//For CV--InjectionList--Ser
 
 	// Defining a new event type for the checking mechanism and preparing event-handling mechanism
 
@@ -124,6 +132,8 @@ public class JCheckBoxScriptsTree extends JTree {
 		}
 	}
 
+	
+		
 	// Overriding cell renderer by a class that ignores the original "selection" mechanism
 	// It decides how to show the nodes due to the checking-mechanism
 	private class CheckBoxCellRenderer extends JPanel implements TreeCellRenderer {     

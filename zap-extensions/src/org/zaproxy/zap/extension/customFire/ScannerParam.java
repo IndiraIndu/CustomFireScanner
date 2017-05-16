@@ -44,18 +44,28 @@
 
 package org.zaproxy.zap.extension.customFire;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileFilter;
+
 import org.apache.commons.configuration.ConversionException;
 import org.apache.commons.configuration.HierarchicalConfiguration;
 import org.apache.log4j.Logger;
+import org.parosproxy.paros.Constant;
 import org.parosproxy.paros.common.AbstractParam;
 import org.parosproxy.paros.core.scanner.NameValuePair;
-import org.parosproxy.paros.core.scanner.ScannerParamFilter;
+import org.parosproxy.paros.view.View;
+//import org.parosproxy.paros.core.scanner.ScannerParamFilter;
+import org.zaproxy.zap.extension.customFire.ScannerParamFilter;
 
 /**
  * 
@@ -615,5 +625,53 @@ public class ScannerParam extends AbstractParam implements Serializable {
         this.scanHeadersAllRequests = scanAllRequests;
         getConfig().setProperty(SCAN_HEADERS_ALL_REQUESTS, Boolean.valueOf(this.scanHeadersAllRequests));
     }
+
+/*	public void saveScannerParam(ScannerParam param) {
+		JFileChooser chooser = new JFileChooser(Constant.getPoliciesDir());
+		File file = new File(Constant.getZapHome(), "Input Vectors.ser");
+		chooser.setSelectedFile(file);
+
+		chooser.setFileFilter(new FileFilter() {
+			@Override
+			public boolean accept(File file) {
+				if (file.isDirectory()) {
+					return true;
+				} else if (file.isFile() && file.getName().endsWith(".ser")) {
+					return true;
+				}
+				return false;
+			}
+
+			@Override
+			public String getDescription() {
+				return Constant.messages.getString("customFire.custom.file.format.csp.ser");
+			}
+		});
+		int rc = chooser.showSaveDialog(View.getSingleton().getMainFrame());
+		if (rc == JFileChooser.APPROVE_OPTION) {
+			file = chooser.getSelectedFile();
+			if (file == null) {
+				return;
+			}
+			try {
+				
+				FileOutputStream fos = new FileOutputStream(file);
+				ObjectOutputStream oos = new ObjectOutputStream(fos);
+				oos.writeObject(param);
+				oos.close();
+				fos.close();
+				View.getSingleton().showMessageDialog(Constant.messages.getString("customFire.custom.ser.saveIV.success"));
+
+			} catch (IOException e1) {
+				View.getSingleton().showWarningDialog(Constant.messages.getString("customFire.custom.ser.saveIV.error"));
+				return;
+			}
+		}
+		if (rc == JFileChooser.CANCEL_OPTION) {
+			chooser.setVisible(false);
+			return;
+		}
+		
+	}*/
 
 }

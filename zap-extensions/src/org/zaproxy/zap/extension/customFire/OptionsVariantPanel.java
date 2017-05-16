@@ -25,17 +25,25 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 
 import javax.swing.JCheckBox;
+import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SortOrder;
+import javax.swing.filechooser.FileFilter;
 
 import org.parosproxy.paros.Constant;
 import org.parosproxy.paros.control.Control;
-import org.parosproxy.paros.core.scanner.ScannerParam;
-import org.parosproxy.paros.core.scanner.ScannerParamFilter;
+//import org.parosproxy.paros.core.scanner.ScannerParam;
+import org.zaproxy.zap.extension.customFire.ScannerParam;
+//import org.parosproxy.paros.core.scanner.ScannerParamFilter;
+import org.zaproxy.zap.extension.customFire.ScannerParamFilter;
 import org.parosproxy.paros.model.OptionsParam;
 import org.parosproxy.paros.view.AbstractParamPanel;
 import org.parosproxy.paros.view.View;
@@ -70,6 +78,7 @@ public class OptionsVariantPanel extends AbstractParamPanel {
     private JCheckBox chkRPCoData = null;
     private JCheckBox chkRPCDWR = null;
     private JCheckBox chkRPCCustom = null;
+    private ScannerParam scannerParamSaved= null;
     
     // Table for Parameter exclusions
     private ExcludedParameterPanel excludedParamPanel;
@@ -246,6 +255,7 @@ public class OptionsVariantPanel extends AbstractParamPanel {
         OptionsParam options = (OptionsParam) obj;
         ScannerParam param = options.getParamSet(ScannerParam.class);
         saveParam(param);
+        scannerParamSaved = param;
     }
 
     /**
@@ -478,7 +488,12 @@ public class OptionsVariantPanel extends AbstractParamPanel {
      */
     private static class ExcludedParameterPanel extends AbstractMultipleOptionsBaseTablePanel<ScannerParamFilter> {
 
-        private static final String REMOVE_DIALOG_TITLE = Constant.messages.getString("variant.options.excludedparam.dialog.token.remove.title");
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		
+		private static final String REMOVE_DIALOG_TITLE = Constant.messages.getString("variant.options.excludedparam.dialog.token.remove.title");
         private static final String REMOVE_DIALOG_TEXT = Constant.messages.getString("variant.options.excludedparam.dialog.token.remove.text");
 
         private static final String REMOVE_DIALOG_CONFIRM_BUTTON_LABEL = Constant.messages.getString("variant.options.excludedparam.dialog.token.remove.button.confirm");
@@ -565,4 +580,71 @@ public class OptionsVariantPanel extends AbstractParamPanel {
             return (option == JOptionPane.OK_OPTION);
         }
     }
+
+	/**
+	 * @return the param
+	 */
+	public ScannerParam getParam() {
+		return scannerParamSaved;
+	}
+
+	/**
+	 * @param param the param to set
+	 */
+	public void setParam(ScannerParam param) {
+		this.scannerParamSaved = param;
+	}
+
+	/*public void saveInputVectorsState() {
+
+		//Do IV ser
+		JFileChooser chooser = new JFileChooser(Constant.getPoliciesDir());
+		File file = new File(Constant.getZapHome(), "Input Vectors.ser");
+		chooser.setSelectedFile(file);
+
+		chooser.setFileFilter(new FileFilter() {
+			@Override
+			public boolean accept(File file) {
+				if (file.isDirectory()) {
+					return true;
+				} else if (file.isFile() && file.getName().endsWith(".ser")) {
+					return true;
+				}
+				return false;
+			}
+
+			@Override
+			public String getDescription() {
+				return Constant.messages.getString("customFire.custom.file.format.csp.ser");
+			}
+		});
+		int rc = chooser.showSaveDialog(View.getSingleton().getMainFrame());
+		if (rc == JFileChooser.APPROVE_OPTION) {
+			file = chooser.getSelectedFile();
+			if (file == null) {
+				return;
+			}
+			try {
+				
+				FileOutputStream fos = new FileOutputStream(file);
+				ObjectOutputStream oos = new ObjectOutputStream(fos);
+				oos.writeObject(new OptionsVariantPanel());
+				oos.close();
+				fos.close();
+				View.getSingleton().showMessageDialog(Constant.messages.getString("customFire.custom.ser.saveIV.success"));
+
+			} catch (IOException e1) {
+				e1.printStackTrace();
+				//View.getSingleton().showWarningDialog(Constant.messages.getString("customFire.custom.ser.saveIV.error"));
+				return;
+			}
+		}
+		if (rc == JFileChooser.CANCEL_OPTION) {
+			chooser.setVisible(false);
+			return;
+		}
+	}
+	*/
+	
+	
 }
