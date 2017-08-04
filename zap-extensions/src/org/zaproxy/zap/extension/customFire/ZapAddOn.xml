@@ -2,19 +2,25 @@
 	<name>CustomFire</name>
 	<version>2</version>
 	<status>alpha</status>
-	<description>Adds a set of customize injections for security testing of web applications.</description>
+	<description>Adds a set of customize injections for security testing of
+		web applications.</description>
 	<author>Ankur,Indira</author>
 	<url />
 	<changes>
 	<![CDATA[
 	<!-- Fix an exception when cancelling the "Save" access control report dialogue.<br> -->
-	]]> 
+	]]>
 	</changes>
 	<dependson />
 	<extensions>
-		<extension>org.zaproxy.zap.extension.customFire.ExtensionCustomFire</extension>
+		<extension>org.zaproxy.zap.extension.customFire.ExtensionCustomFire
+		</extension>
+		
 	</extensions>
-	<ascanrules />
+	<cscanrules>
+		<cscanrule>org.zaproxy.zap.extension.customFire.TestPathTraversal
+		</cscanrule>
+	</cscanrules>
 	<pscanrules />
 	<filters />
 	<files>

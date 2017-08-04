@@ -21,7 +21,12 @@ package org.zaproxy.zap.extension.customFire;
 
 import java.awt.CardLayout;
 import java.awt.Dimension;
+import java.awt.Event;
+import java.awt.EventQueue;
+import java.awt.Toolkit;
+import java.awt.event.KeyEvent;
 import java.io.Serializable;
+import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.InvalidParameterException;
@@ -32,6 +37,7 @@ import java.util.List;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import javax.swing.JTextPane;
+import javax.swing.KeyStroke;
 
 import org.apache.commons.configuration.ConfigurationException;
 //import org.apache.log4j.Logger;
@@ -49,6 +55,7 @@ import org.parosproxy.paros.model.Session;
 import org.parosproxy.paros.model.SiteNode;
 import org.parosproxy.paros.view.AbstractParamPanel;
 import org.parosproxy.paros.view.View;
+import org.zaproxy.zap.extension.customFire.AttackModeScanner;
 import org.zaproxy.zap.extension.authentication.ExtensionAuthentication;
 import org.zaproxy.zap.extension.authorization.ExtensionAuthorization;
 import org.zaproxy.zap.extension.users.ExtensionUserManagement;
@@ -103,6 +110,9 @@ public class ExtensionCustomFire extends ExtensionAdaptor implements SessionChan
 	private CustomScanPanel customScanPanel = null;
 	private PolicyManagerDialog policyManagerDialog = null;
 
+	private AttackModeScanner attackModeScanner;
+	private ZapMenuItem menuItemCustomScan = null;
+
 	/**
 	 * 
 	 */
@@ -140,7 +150,7 @@ public class ExtensionCustomFire extends ExtensionAdaptor implements SessionChan
 		this.setName(NAME);
 		policyManager = new PolicyManager(this);
 		cscanController = new CustomScanController(this);
-		//		attackModeScanner = new AttackModeScanner(this);
+		attackModeScanner = new AttackModeScanner(this);
 	}
 
 	@Override
@@ -154,7 +164,7 @@ public class ExtensionCustomFire extends ExtensionAdaptor implements SessionChan
 			} else {
 				// TODO Need to make sure the attackModeScanner starts up
 
-				//this.attackModeScanner.sessionModeChanged(Control.getSingleton().getMode());
+				this.attackModeScanner.sessionModeChanged(Control.getSingleton().getMode());
 			}
 		}
 	}
@@ -252,17 +262,78 @@ public class ExtensionCustomFire extends ExtensionAdaptor implements SessionChan
 	}
 
 
+
+	@Override
+	public void sessionChanged(final Session session) {
+		if (EventQueue.isDispatchThread()) {
+			sessionChangedEventHandler(session);
+
+		} else {
+			try {
+				EventQueue.invokeAndWait(new Runnable() {
+					@Override
+					public void run() {
+						sessionChangedEventHandler(session);
+					}
+				});
+
+			} catch (InterruptedException | InvocationTargetException e) {
+				//logger.error(e.getMessage(), e);
+				e.printStackTrace();
+			}
+		}
+	}
+
+	private void sessionChangedEventHandler(Session session) {
+		// The scans are stopped in sessionAboutToChange(..)
+		if (View.isInitialised()) {
+			this.getCustomScanPanel().reset();
+		}
+
+		this.attackModeScanner.stop();
+
+		if (session == null) {
+			// Closedown
+			return;
+		}
+		if (Control.getSingleton().getMode().equals(Mode.attack)) {
+			// Start the attack mode scanner up again, have to rescan on change or it wont do anything
+			this.attackModeScanner.start();
+			this.attackModeScanner.setRescanOnChange(true);
+		}
+
+	}
+
 	/**
 	 * Methods yet to be implemented
 	 */
 	@Override
-	public void sessionChanged(Session session) {
-		// TODO Auto-generated method stub
+	public void sessionModeChanged(Mode mode) {
+		if (Mode.safe.equals(mode)) {
+			this.cscanController.stopAllScans();
+		}
+		if (View.isInitialised()) {
+			getMenuItemCustomScan().setEnabled( ! Mode.safe.equals(mode));
+			this.getCustomScanPanel().sessionModeChanged(mode);
+		}
+		this.attackModeScanner.sessionModeChanged(mode);
 	}
 
-	@Override
-	public void sessionModeChanged(Mode mode) {
-		// TODO Auto-generated method stub
+	private ZapMenuItem getMenuItemCustomScan() {
+		if (menuItemCustomScan == null) {
+			menuItemCustomScan = new ZapMenuItem("menu.tools.ascanadv",
+					KeyStroke.getKeyStroke(KeyEvent.VK_A, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask() | Event.ALT_MASK, false));
+
+			menuItemCustomScan.addActionListener(new java.awt.event.ActionListener() {
+				@Override
+				public void actionPerformed(java.awt.event.ActionEvent e) {
+					showCustomFireDialog(null);
+				}
+			});
+
+		}
+
+		return menuItemCustomScan;
 	}
 
 	@Override
@@ -304,16 +375,17 @@ public class ExtensionCustomFire extends ExtensionAdaptor implements SessionChan
 		this.policyPanels.add(panel);
 	}
 
+	//TODO : Implement sessionChange 
 	@Override
 	public void sessionAboutToChange(Session session) {
-		// TODO Auto-generated method stub
+		// Stop attackModeScanner and do not reset custom fire dialog.
 		this.cscanController.reset();
-		//		this.attackModeScanner.stop();
+		this.attackModeScanner.stop();
 
 		if (View.isInitialised()) {
 			this.getCustomScanPanel().reset();
 			if (customFireDialog != null) {
-				customFireDialog.reset();
+				//customFireDialog.reset();
 			}
 		}
 	}
@@ -388,7 +460,7 @@ public class ExtensionCustomFire extends ExtensionAdaptor implements SessionChan
 	}
 
 	public void showPolicyManagerDialog() {
-		
+
 		if (policyManagerDialog == null) {
 			policyManagerDialog = new PolicyManagerDialog(View.getSingleton().getMainFrame());
 			policyManagerDialog.init(this);
@@ -611,6 +683,10 @@ public class ExtensionCustomFire extends ExtensionAdaptor implements SessionChan
 		}
 
 		return id;
+	}
+
+	public int getAttackModeStackSize() {
+		return this.attackModeScanner.getStackSize();
 	}
 
 	@Override

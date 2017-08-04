@@ -5,6 +5,7 @@ import org.apache.commons.configuration.FileConfiguration;
 import org.parosproxy.paros.core.scanner.Plugin.AlertThreshold;
 import org.parosproxy.paros.core.scanner.Plugin.AttackStrength;
 import org.parosproxy.paros.core.scanner.PluginFactory;
+//import org.parosproxy.paros.core.scanner.PluginFactory;
 import org.zaproxy.zap.extension.ascan.ScanPolicy;
 import org.zaproxy.zap.utils.ZapXmlConfiguration;
 
@@ -14,8 +15,7 @@ import org.zaproxy.zap.utils.ZapXmlConfiguration;
  *
  * Nov 29, 2016  org.zaproxy.zap.extension.customFire
  */
-public class CustomScanPolicy extends ScanPolicy
-{
+public class CustomScanPolicy extends ScanPolicy {
 
 	private String name;
 	private PluginFactory pluginFactory = new PluginFactory();

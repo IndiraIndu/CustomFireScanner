@@ -41,6 +41,7 @@ import org.parosproxy.paros.Constant;
 import org.parosproxy.paros.core.scanner.Plugin.AlertThreshold;
 import org.parosproxy.paros.core.scanner.Plugin.AttackStrength;
 import org.parosproxy.paros.core.scanner.PluginFactory;
+//import org.parosproxy.paros.core.scanner.PluginFactory;
 import org.parosproxy.paros.view.AbstractParamPanel;
 import org.zaproxy.zap.extension.customFire.CategoryTableModel;
 import org.zaproxy.zap.utils.DisplayUtils;

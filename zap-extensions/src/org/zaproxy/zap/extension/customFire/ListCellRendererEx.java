@@ -42,18 +42,4 @@ public class ListCellRendererEx implements ListCellRenderer<Highlight>, Serializ
 		return new JLabel("[" + hlt.getStartOffset() + "," + hlt.getEndOffset() + "]: " + str);
 	}
 
-
-/*	*//**
-	 * 
-	 * @return ZapTextArea `
-	 *//*
-	private ZapTextArea getRequestField() {
-		if (requestField == null) {
-			requestField = new ZapTextArea();
-			requestField.setEditable(false);
-			requestField.setLineWrap(true);
-			requestField.getCaret().setVisible(true);
-		}
-		return requestField;
-	}*/
 }
